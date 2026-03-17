@@ -37,28 +37,25 @@ public class Tour {
     @Column(nullable = false)
     private Integer tourNights;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "tour_inclusions", joinColumns = @JoinColumn(name = "tour_id"))
     @Column(name = "inclusion")
     private List<String> tourInclusions = new ArrayList<>();
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "tour_exclusions", joinColumns = @JoinColumn(name = "tour_id"))
     @Column(name = "exclusion")
     private List<String> tourExclusions = new ArrayList<>();
 
-    // Main image filename
-    private String tourImage;
-
-    @ElementCollection
-    @CollectionTable(name = "tour_additional_images", joinColumns = @JoinColumn(name = "tour_id"))
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "tour_images", joinColumns = @JoinColumn(name = "tour_id"))
     @Column(name = "image_url", length = 500)
-    private List<String> additionalImages = new ArrayList<>();
+    private List<String> tourImages = new ArrayList<>();
 
     @Column(length = 2000)
     private String tourDescription;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "tour_services", joinColumns = @JoinColumn(name = "tour_id"))
     @Column(name = "service")
     private List<String> tourServices = new ArrayList<>();

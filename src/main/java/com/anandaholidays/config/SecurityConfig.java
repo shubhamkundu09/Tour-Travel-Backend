@@ -4,7 +4,6 @@ import com.anandaholidays.security.JwtAuthenticationEntryPoint;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -35,8 +34,8 @@ public class SecurityConfig {
                         .authenticationEntryPoint(jwtAuthenticationEntryPoint)
                 )
                 .authorizeHttpRequests(auth -> auth
-                        // Allow ALL static resources and root path
-                        .requestMatchers("/", "/index.html").permitAll()
+                        // Allow ALL static resources including HTML files
+                        .requestMatchers("/", "/index.html", "/admin.html").permitAll()
                         .requestMatchers("/static/**", "/css/**", "/js/**", "/images/**").permitAll()
                         .requestMatchers("/*.css", "/*.js", "/*.png", "/*.jpg", "/*.jpeg", "/*.gif", "/*.svg", "/*.ico").permitAll()
                         .requestMatchers("/favicon.ico").permitAll()
@@ -45,6 +44,7 @@ public class SecurityConfig {
                         // Public API endpoints
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/tours/**").permitAll()
+                        .requestMatchers("/api/images/**").permitAll()
 
                         // Protected endpoints
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")

@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -36,17 +37,23 @@ public class TourRequestWithImage {
     @Min(value = 0, message = "Tour nights must be non-negative")
     private Integer tourNights;
 
-    private List<String> tourInclusions;
-    private List<String> tourExclusions;
+    private List<String> tourInclusions = new ArrayList<>();
+    private List<String> tourExclusions = new ArrayList<>();
 
     // Main image file
     private MultipartFile tourImage;
 
     // Additional images
-    private List<MultipartFile> additionalImages;
+    private List<MultipartFile> additionalImages = new ArrayList<>();
+
+    // Existing images (for update operations)
+    private List<String> existingImages = new ArrayList<>();
+
+    // Images to delete (for update operations)
+    private List<String> imagesToDelete = new ArrayList<>();
 
     private String tourDescription;
-    private List<String> tourServices;
+    private List<String> tourServices = new ArrayList<>();
 
     @NotNull(message = "Tour type is required")
     private TourType tourType;
