@@ -47,10 +47,13 @@ public class Tour {
     @Column(name = "exclusion")
     private List<String> tourExclusions = new ArrayList<>();
 
+    // Main image filename
+    private String tourImage;
+
     @ElementCollection
-    @CollectionTable(name = "tour_images", joinColumns = @JoinColumn(name = "tour_id"))
+    @CollectionTable(name = "tour_additional_images", joinColumns = @JoinColumn(name = "tour_id"))
     @Column(name = "image_url", length = 500)
-    private List<String> tourImages = new ArrayList<>();
+    private List<String> additionalImages = new ArrayList<>();
 
     @Column(length = 2000)
     private String tourDescription;

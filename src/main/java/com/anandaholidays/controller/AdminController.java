@@ -1,6 +1,6 @@
 package com.anandaholidays.controller;
 
-import com.anandaholidays.dto.TourRequest;
+import com.anandaholidays.dto.TourRequestWithImage;
 import com.anandaholidays.dto.TourResponse;
 import com.anandaholidays.service.TourService;
 import jakarta.validation.Valid;
@@ -8,6 +8,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -18,19 +21,32 @@ public class AdminController {
 
     private final TourService tourService;
 
-    @PostMapping("/tours")
-    public ResponseEntity<TourResponse> createTour(@Valid @RequestBody TourRequest request) {
-        return new ResponseEntity<>(tourService.createTour(request), HttpStatus.CREATED);
+    @PostMapping(value = "/tours", consumes = {"multipart/form-data"})
+    public ResponseEntity<TourResponse> createTour(
+            @Valid @RequestPart("tour") TourRequestWithImage request,
+            @RequestPart(value = "tourImage", required = false) MultipartFile tourImage,
+            @RequestPart(value = "additionalImages", required = false) List<MultipartFile> additionalImages) throws IOException {
+
+        request.setTourImage(tourImage);
+        request.setAdditionalImages(additionalImages);
+        return new ResponseEntity<>(tourService.createTourWithImages(request), HttpStatus.CREATED);
     }
 
-    @PutMapping("/tours/{id}")
-    public ResponseEntity<TourResponse> updateTour(@PathVariable Long id, @Valid @RequestBody TourRequest request) {
-        return ResponseEntity.ok(tourService.updateTour(id, request));
+    @PutMapping(value = "/tours/{id}", consumes = {"multipart/form-data"})
+    public ResponseEntity<TourResponse> updateTour(
+            @PathVariable Long id,
+            @Valid @RequestPart("tour") TourRequestWithImage request,
+            @RequestPart(value = "tourImage", required = false) MultipartFile tourImage,
+            @RequestPart(value = "additionalImages", required = false) List<MultipartFile> additionalImages) throws IOException {
+
+        request.setTourImage(tourImage);
+        request.setAdditionalImages(additionalImages);
+        return ResponseEntity.ok(tourService.updateTourWithImages(id, request));
     }
 
     @DeleteMapping("/tours/{id}")
-    public ResponseEntity<Void> deleteTour(@PathVariable Long id) {
-        tourService.deleteTour(id);
+    public ResponseEntity<Void> deleteTour(@PathVariable Long id) throws IOException {
+        tourService.deleteTourWithImages(id);
         return ResponseEntity.noContent().build();
     }
 
