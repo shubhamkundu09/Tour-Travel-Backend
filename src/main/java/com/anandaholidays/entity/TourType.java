@@ -1,3 +1,4 @@
+// TourType.java
 package com.anandaholidays.entity;
 
 public enum TourType {

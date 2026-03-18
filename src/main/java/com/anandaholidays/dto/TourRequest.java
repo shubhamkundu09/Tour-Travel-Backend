@@ -2,17 +2,14 @@ package com.anandaholidays.dto;
 
 import com.anandaholidays.entity.TourType;
 import jakarta.validation.constraints.*;
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class TourRequest {
-
     @NotBlank(message = "Tour name is required")
     private String tourName;
 
@@ -27,18 +24,16 @@ public class TourRequest {
     private String tourLocation;
 
     @NotNull(message = "Tour days are required")
-    @Min(value = 1, message = "Tour days must be at least 1")
+    @Min(1)
     private Integer tourDays;
 
     @NotNull(message = "Tour nights are required")
-    @Min(value = 0, message = "Tour nights must be non-negative")
+    @Min(0)
     private Integer tourNights;
 
-    private List<String> tourInclusions;
-    private List<String> tourExclusions;
-    private List<String> tourImages;
-    private String tourDescription;
-    private List<String> tourServices;
+    private List<String> tourInclusions = new ArrayList<>();
+    private List<String> tourExclusions = new ArrayList<>();
+    private List<String> tourServices = new ArrayList<>();
 
     @NotNull(message = "Tour type is required")
     private TourType tourType;
@@ -51,6 +46,15 @@ public class TourRequest {
     @Future(message = "Tour ending date must be in the future")
     private LocalDate tourEndingDate;
 
+    private String tourDescription;
     private String tourHelplineNumber;
     private String tourMapEmbedUrl;
+
+    // For file uploads
+    private MultipartFile mainImage;
+    private List<MultipartFile> additionalImages = new ArrayList<>();
+
+    // For updates
+    private List<String> existingImages = new ArrayList<>();
+    private List<String> imagesToDelete = new ArrayList<>();
 }

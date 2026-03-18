@@ -1,6 +1,7 @@
+// AuthController.java
 package com.anandaholidays.controller;
 
-import com.anandaholidays.dto.AdminLoginRequest;
+import com.anandaholidays.dto.LoginRequest;
 import com.anandaholidays.dto.AuthResponse;
 import com.anandaholidays.entity.Admin;
 import com.anandaholidays.security.JwtUtil;
@@ -10,7 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -23,22 +23,16 @@ public class AuthController {
     private final JwtUtil jwtUtil;
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@Valid @RequestBody AdminLoginRequest loginRequest) {
+    public ResponseEntity<?> login(@Valid @RequestBody LoginRequest request) {
         Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword())
+                new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
         );
 
-        SecurityContextHolder.getContext().setAuthentication(authentication);
         Admin admin = (Admin) authentication.getPrincipal();
-        String jwt = jwtUtil.generateToken(admin);
+        String token = jwtUtil.generateToken(admin);
 
         return ResponseEntity.ok(new AuthResponse(
-                jwt,
-                "Bearer",
-                admin.getId(),
-                admin.getUsername(),
-                admin.getEmail(),
-                admin.getRole()
+                token, "Bearer", admin.getId(), admin.getUsername(), admin.getEmail(), admin.getRole()
         ));
     }
 }

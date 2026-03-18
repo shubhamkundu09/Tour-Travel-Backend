@@ -1,9 +1,8 @@
+// Tour.java
 package com.anandaholidays.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,8 +10,6 @@ import java.util.List;
 @Entity
 @Table(name = "tours")
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class Tour {
 
     @Id
@@ -38,27 +35,24 @@ public class Tour {
     private Integer tourNights;
 
     @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "tour_inclusions", joinColumns = @JoinColumn(name = "tour_id"))
-    @Column(name = "inclusion")
+    @CollectionTable(name = "tour_inclusions")
     private List<String> tourInclusions = new ArrayList<>();
 
     @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "tour_exclusions", joinColumns = @JoinColumn(name = "tour_id"))
-    @Column(name = "exclusion")
+    @CollectionTable(name = "tour_exclusions")
     private List<String> tourExclusions = new ArrayList<>();
 
     @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "tour_images", joinColumns = @JoinColumn(name = "tour_id"))
-    @Column(name = "image_url", length = 500)
+    @CollectionTable(name = "tour_services")
+    private List<String> tourServices = new ArrayList<>();
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "tour_images")
+    @Column(length = 500)
     private List<String> tourImages = new ArrayList<>();
 
     @Column(length = 2000)
     private String tourDescription;
-
-    @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "tour_services", joinColumns = @JoinColumn(name = "tour_id"))
-    @Column(name = "service")
-    private List<String> tourServices = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
     private TourType tourType;
@@ -77,18 +71,10 @@ public class Tour {
     @Column(nullable = false)
     private Boolean isActive = true;
 
-    @Column(nullable = false)
     private LocalDate createdAt;
-
-    private LocalDate updatedAt;
 
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDate.now();
-    }
-
-    @PreUpdate
-    protected void onUpdate() {
-        updatedAt = LocalDate.now();
     }
 }

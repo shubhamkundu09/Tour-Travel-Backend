@@ -1,18 +1,13 @@
+// Booking.java
 package com.anandaholidays.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
 
 @Entity
 @Table(name = "bookings")
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class Booking {
 
     public static final String STATUS_CONFIRMED = "CONFIRMED";
@@ -36,7 +31,6 @@ public class Booking {
     private Integer numberOfAdults;
     private Integer numberOfChildren;
 
-    @Column(nullable = false)
     private LocalDateTime bookingDate;
 
     @ManyToOne(fetch = FetchType.EAGER)
@@ -45,7 +39,6 @@ public class Booking {
 
     private String specialRequests;
 
-    @Column(nullable = false)
     private Double totalAmount;
 
     private String bookingStatus = STATUS_CONFIRMED;
@@ -53,15 +46,5 @@ public class Booking {
     @PrePersist
     protected void onCreate() {
         bookingDate = LocalDateTime.now();
-    }
-
-    public void setBookingStatus(String status) {
-        List<String> validStatuses = Arrays.asList(
-                STATUS_CONFIRMED, STATUS_CANCELLED, STATUS_COMPLETED, STATUS_PENDING
-        );
-        if (!validStatuses.contains(status)) {
-            throw new IllegalArgumentException("Invalid booking status: " + status);
-        }
-        this.bookingStatus = status;
     }
 }

@@ -2,10 +2,10 @@ package com.anandaholidays.controller;
 
 import com.anandaholidays.dto.BookingResponse;
 import com.anandaholidays.dto.TourRequest;
-import com.anandaholidays.dto.TourRequestWithImage;
 import com.anandaholidays.dto.TourResponse;
 import com.anandaholidays.service.BookingService;
 import com.anandaholidays.service.TourService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -25,74 +26,57 @@ public class AdminController {
 
     private final TourService tourService;
     private final BookingService bookingService;
+    private final ObjectMapper objectMapper;
 
     // Tour Management
-    @PostMapping(value = "/tours", consumes = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<TourResponse> createTourJson(@Valid @RequestBody TourRequest request) {
+    @PostMapping(value = "/tours", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    public ResponseEntity<TourResponse> createTour(
+            @RequestPart("tour") String tourJson,
+            @RequestPart(value = "mainImage", required = false) MultipartFile mainImage,
+            @RequestPart(value = "additionalImages", required = false) List<MultipartFile> additionalImages) throws IOException {
+
+        TourRequest request = objectMapper.readValue(tourJson, TourRequest.class);
+        request.setMainImage(mainImage);
+        request.setAdditionalImages(additionalImages != null ? additionalImages : new ArrayList<>());
+
         return new ResponseEntity<>(tourService.createTour(request), HttpStatus.CREATED);
     }
 
-    @PostMapping(value = "/tours", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<TourResponse> createTourWithImages(
-            @Valid @RequestPart("tour") TourRequestWithImage request,
-            @RequestPart(value = "tourImage", required = false) MultipartFile tourImage,
-            @RequestPart(value = "additionalImages", required = false) List<MultipartFile> additionalImages) throws IOException {
-
-        request.setTourImage(tourImage);
-        request.setAdditionalImages(additionalImages);
-        return new ResponseEntity<>(tourService.createTourWithImages(request), HttpStatus.CREATED);
-    }
-
-    @PutMapping(value = "/tours/{id}", consumes = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<TourResponse> updateTourJson(@PathVariable Long id, @Valid @RequestBody TourRequest request) {
-        return ResponseEntity.ok(tourService.updateTour(id, request));
-    }
-
     @PutMapping(value = "/tours/{id}", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<TourResponse> updateTourWithImages(
+    public ResponseEntity<TourResponse> updateTour(
             @PathVariable Long id,
-            @Valid @RequestPart("tour") TourRequestWithImage request,
-            @RequestPart(value = "tourImage", required = false) MultipartFile tourImage,
-            @RequestPart(value = "additionalImages", required = false) List<MultipartFile> additionalImages) throws IOException {
+            @RequestPart("tour") String tourJson,
+            @RequestPart(value = "mainImage", required = false) MultipartFile mainImage,
+            @RequestPart(value = "additionalImages", required = false) List<MultipartFile> additionalImages,
+            @RequestParam(value = "existingImages", required = false) List<String> existingImages,
+            @RequestParam(value = "imagesToDelete", required = false) List<String> imagesToDelete) throws IOException {
 
-        request.setTourImage(tourImage);
-        request.setAdditionalImages(additionalImages);
-        return ResponseEntity.ok(tourService.updateTourWithImages(id, request));
+        TourRequest request = objectMapper.readValue(tourJson, TourRequest.class);
+        request.setMainImage(mainImage);
+        request.setAdditionalImages(additionalImages != null ? additionalImages : new ArrayList<>());
+        request.setExistingImages(existingImages != null ? existingImages : new ArrayList<>());
+        request.setImagesToDelete(imagesToDelete != null ? imagesToDelete : new ArrayList<>());
+
+        return ResponseEntity.ok(tourService.updateTour(id, request));
     }
 
     @DeleteMapping("/tours/{id}")
     public ResponseEntity<Void> deleteTour(@PathVariable Long id) throws IOException {
-        tourService.deleteTourWithImages(id);
+        tourService.deleteTour(id);
         return ResponseEntity.noContent().build();
     }
 
-    @DeleteMapping("/tours/{id}/permanent")
-    public ResponseEntity<Void> permanentlyDeleteTour(@PathVariable Long id) throws IOException {
-        tourService.permanentlyDeleteTour(id);
-        return ResponseEntity.noContent().build();
-    }
-
-    @GetMapping("/tours/all")
+    @GetMapping("/tours")
     public ResponseEntity<List<TourResponse>> getAllTours() {
         return ResponseEntity.ok(tourService.getAllTours());
     }
 
-    @GetMapping("/tours/upcoming")
-    public ResponseEntity<List<TourResponse>> getUpcomingTours() {
-        return ResponseEntity.ok(tourService.getUpcomingTours());
+    @GetMapping("/tours/{id}")
+    public ResponseEntity<TourResponse> getTourById(@PathVariable Long id) {
+        return ResponseEntity.ok(tourService.getTourById(id));
     }
 
-    @GetMapping("/tours/ongoing")
-    public ResponseEntity<List<TourResponse>> getOngoingTours() {
-        return ResponseEntity.ok(tourService.getOngoingTours());
-    }
-
-    @GetMapping("/tours/completed")
-    public ResponseEntity<List<TourResponse>> getCompletedTours() {
-        return ResponseEntity.ok(tourService.getCompletedTours());
-    }
-
-    // Booking Management for Admin
+    // Booking Management
     @GetMapping("/bookings")
     public ResponseEntity<List<BookingResponse>> getAllBookings() {
         return ResponseEntity.ok(bookingService.getAllBookings());
@@ -101,16 +85,6 @@ public class AdminController {
     @GetMapping("/bookings/{id}")
     public ResponseEntity<BookingResponse> getBookingById(@PathVariable Long id) {
         return ResponseEntity.ok(bookingService.getBookingById(id));
-    }
-
-    @GetMapping("/bookings/tour/{tourId}")
-    public ResponseEntity<List<BookingResponse>> getBookingsByTour(@PathVariable Long tourId) {
-        return ResponseEntity.ok(bookingService.getBookingsByTourId(tourId));
-    }
-
-    @GetMapping("/bookings/email/{email}")
-    public ResponseEntity<List<BookingResponse>> getBookingsByEmail(@PathVariable String email) {
-        return ResponseEntity.ok(bookingService.getBookingsByCustomerEmail(email));
     }
 
     @PutMapping("/bookings/{id}/status")

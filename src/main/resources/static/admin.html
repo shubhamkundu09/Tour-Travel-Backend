@@ -3,1857 +3,798 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AnandaHolidays - Admin Dashboard</title>
+    <title>Admin Dashboard - AnandaHolidays</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
         :root {
-            --primary-color: #ff6b6b;
-            --secondary-color: #4ecdc4;
-            --dark-color: #2c3e50;
-            --light-color: #f9f9f9;
-            --success-color: #27ae60;
-            --warning-color: #f39c12;
-            --danger-color: #e74c3c;
             --sidebar-width: 250px;
+            --primary-color: #2c3e50;
+            --secondary-color: #e67e22;
         }
-
         body {
-            background-color: var(--light-color);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f4f6f9;
+        }
+        .wrapper {
             display: flex;
-            min-height: 100vh;
-        }
-
-        /* Login Page */
-        .login-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            width: 100%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        }
-
-        .login-box {
-            background: white;
-            padding: 2rem;
-            border-radius: 10px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            width: 100%;
-            max-width: 400px;
-        }
-
-        .login-header {
-            text-align: center;
-            margin-bottom: 2rem;
-        }
-
-        .login-header h2 {
-            color: var(--dark-color);
-            margin-bottom: 0.5rem;
-        }
-
-        .login-header p {
-            color: #666;
-        }
-
-        .login-form {
-            display: grid;
-            gap: 1rem;
-        }
-
-        .login-input {
-            padding: 0.8rem;
-            border: 2px solid #e0e0e0;
-            border-radius: 5px;
-            font-size: 1rem;
-            transition: border-color 0.3s;
-        }
-
-        .login-input:focus {
-            outline: none;
-            border-color: var(--primary-color);
-        }
-
-        .login-btn {
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            padding: 1rem;
-            border-radius: 5px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-
-        .login-btn:hover {
-            background-color: #ff5252;
-        }
-
-        .back-to-site {
-            text-align: center;
-            margin-top: 1rem;
-        }
-
-        .back-to-site a {
-            color: var(--primary-color);
-            text-decoration: none;
-        }
-
-        /* Dashboard */
-        .dashboard-container {
-            display: none;
             width: 100%;
         }
-
-        /* Sidebar */
-        .sidebar {
+        #sidebar {
             width: var(--sidebar-width);
-            background-color: var(--dark-color);
-            color: white;
             position: fixed;
             height: 100vh;
-            overflow-y: auto;
+            background: var(--primary-color);
+            color: white;
+            transition: all 0.3s;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
         }
-
-        .sidebar-header {
-            padding: 1.5rem;
-            text-align: center;
+        #sidebar.active {
+            margin-left: calc(-1 * var(--sidebar-width));
+        }
+        #content {
+            width: calc(100% - var(--sidebar-width));
+            margin-left: var(--sidebar-width);
+            transition: all 0.3s;
+            min-height: 100vh;
+        }
+        #content.active {
+            width: 100%;
+            margin-left: 0;
+        }
+        #sidebar .sidebar-header {
+            padding: 20px;
+            background: rgba(0,0,0,0.2);
             border-bottom: 1px solid rgba(255,255,255,0.1);
         }
-
-        .sidebar-header h2 {
-            color: var(--primary-color);
-            font-size: 1.5rem;
+        #sidebar ul.components {
+            padding: 20px 0;
         }
-
-        .sidebar-header p {
-            font-size: 0.9rem;
-            opacity: 0.8;
-            margin-top: 0.3rem;
+        #sidebar ul li a {
+            padding: 10px 20px;
+            display: block;
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            transition: all 0.3s;
         }
-
-        .sidebar-menu {
-            padding: 1rem 0;
-        }
-
-        .sidebar-menu-item {
-            padding: 0.8rem 1.5rem;
-            cursor: pointer;
-            transition: background-color 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .sidebar-menu-item:hover {
-            background-color: rgba(255,255,255,0.1);
-        }
-
-        .sidebar-menu-item.active {
-            background-color: var(--primary-color);
-        }
-
-        .sidebar-menu-item i {
-            width: 20px;
-        }
-
-        /* Main Content */
-        .main-content {
-            margin-left: var(--sidebar-width);
-            padding: 2rem;
-            width: calc(100% - var(--sidebar-width));
-        }
-
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 2rem;
-            padding-bottom: 1rem;
-            border-bottom: 2px solid #e0e0e0;
-        }
-
-        .header h1 {
-            color: var(--dark-color);
-        }
-
-        .logout-btn {
-            background-color: var(--danger-color);
+        #sidebar ul li a:hover {
+            background: rgba(255,255,255,0.1);
             color: white;
+            padding-left: 25px;
+        }
+        #sidebar ul li.active a {
+            background: var(--secondary-color);
+            color: white;
+        }
+        .navbar {
+            background: white !important;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .card-stats {
             border: none;
-            padding: 0.5rem 1.5rem;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: background-color 0.3s;
-        }
-
-        .logout-btn:hover {
-            background-color: #c0392b;
-        }
-
-        /* Stats Cards */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-        }
-
-        .stat-card {
-            background: white;
-            padding: 1.5rem;
             border-radius: 10px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
         }
-
-        .stat-card h3 {
-            color: #666;
-            font-size: 0.9rem;
-            margin-bottom: 0.5rem;
+        .card-stats:hover {
+            transform: translateY(-5px);
         }
-
-        .stat-card .stat-value {
-            font-size: 2rem;
-            font-weight: 700;
-            color: var(--dark-color);
-        }
-
-        /* Action Bar */
-        .action-bar {
-            display: flex;
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-            flex-wrap: wrap;
-        }
-
-        .action-btn {
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            padding: 0.8rem 1.5rem;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: background-color 0.3s;
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            justify-content: center;
+            font-size: 1.5rem;
         }
-
-        .action-btn:hover {
-            background-color: #ff5252;
-        }
-
-        .action-btn.secondary {
-            background-color: var(--secondary-color);
-        }
-
-        .action-btn.secondary:hover {
-            background-color: #3db9b0;
-        }
-
-        .action-btn.warning {
-            background-color: var(--warning-color);
-        }
-
-        .action-btn.warning:hover {
-            background-color: #e67e22;
-        }
-
-        .action-btn.danger {
-            background-color: var(--danger-color);
-        }
-
-        .action-btn.danger:hover {
-            background-color: #c0392b;
-        }
-
-        /* Search Bar */
-        .search-bar {
-            display: flex;
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-            flex-wrap: wrap;
-        }
-
-        .search-input {
-            flex: 1;
-            padding: 0.8rem;
-            border: 2px solid #e0e0e0;
-            border-radius: 5px;
-            font-size: 1rem;
-            min-width: 200px;
-        }
-
-        .search-input:focus {
-            outline: none;
-            border-color: var(--primary-color);
-        }
-
-        /* Table */
         .table-container {
             background: white;
             border-radius: 10px;
+            padding: 20px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            overflow-x: auto;
         }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
+        .btn-action {
+            padding: 5px 10px;
+            margin: 0 2px;
         }
-
-        th {
-            background-color: #f8f9fa;
-            padding: 1rem;
-            text-align: left;
-            font-weight: 600;
-            color: var(--dark-color);
-            border-bottom: 2px solid #e0e0e0;
+        .login-container {
+            max-width: 400px;
+            margin: 100px auto;
         }
-
-        td {
-            padding: 1rem;
-            border-bottom: 1px solid #e0e0e0;
-        }
-
-        tr:hover {
-            background-color: #f8f9fa;
-        }
-
-        .table-actions {
-            display: flex;
-            gap: 0.5rem;
-        }
-
-        .table-btn {
-            padding: 0.3rem 0.8rem;
+        .login-card {
             border: none;
-            border-radius: 3px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            transition: background-color 0.3s;
-        }
-
-        .table-btn.edit {
-            background-color: var(--warning-color);
-            color: white;
-        }
-
-        .table-btn.edit:hover {
-            background-color: #e67e22;
-        }
-
-        .table-btn.delete {
-            background-color: var(--danger-color);
-            color: white;
-        }
-
-        .table-btn.delete:hover {
-            background-color: #c0392b;
-        }
-
-        .table-btn.view {
-            background-color: var(--secondary-color);
-            color: white;
-        }
-
-        .table-btn.view:hover {
-            background-color: #3db9b0;
-        }
-
-        /* Status Badge */
-        .status-badge {
-            display: inline-block;
-            padding: 0.3rem 0.8rem;
             border-radius: 15px;
-            font-size: 0.8rem;
-            font-weight: 600;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
         }
-
-        .status-confirmed {
-            background-color: #e8f5e8;
-            color: #388e3c;
+        .login-header {
+            background: var(--primary-color);
+            color: white;
+            border-radius: 15px 15px 0 0;
+            padding: 20px;
         }
-
-        .status-pending {
-            background-color: #fff3e0;
-            color: #f57c00;
-        }
-
-        .status-cancelled {
-            background-color: #ffebee;
-            color: #c62828;
-        }
-
-        .status-completed {
-            background-color: #e3f2fd;
-            color: #1976d2;
-        }
-
-        /* Modal */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.5);
-            z-index: 2000;
-            overflow-y: auto;
-        }
-
-        .modal-content {
-            background-color: white;
-            margin: 50px auto;
-            padding: 2rem;
-            border-radius: 15px;
-            max-width: 800px;
-            position: relative;
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1.5rem;
-            padding-bottom: 1rem;
-            border-bottom: 2px solid #f0f0f0;
-        }
-
-        .modal-title {
-            font-size: 1.5rem;
-            font-weight: 600;
-        }
-
-        .close-modal {
-            font-size: 1.5rem;
-            cursor: pointer;
-            color: #666;
-            transition: color 0.3s;
-        }
-
-        .close-modal:hover {
-            color: var(--danger-color);
-        }
-
-        /* Form */
-        .tour-form {
-            display: grid;
-            gap: 1rem;
-        }
-
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-        }
-
-        .form-group {
-            display: grid;
-            gap: 0.3rem;
-        }
-
-        .form-label {
-            font-weight: 500;
-            color: var(--dark-color);
-        }
-
-        .form-input {
-            padding: 0.8rem;
-            border: 2px solid #e0e0e0;
-            border-radius: 5px;
-            font-size: 1rem;
-            transition: border-color 0.3s;
-        }
-
-        .form-input:focus {
-            outline: none;
-            border-color: var(--primary-color);
-        }
-
-        .form-textarea {
-            padding: 0.8rem;
-            border: 2px solid #e0e0e0;
-            border-radius: 5px;
-            font-size: 1rem;
-            min-height: 100px;
-            resize: vertical;
-        }
-
-        .image-preview {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 1rem;
-            margin: 1rem 0;
-        }
-
-        .image-preview-item {
-            position: relative;
-            width: 100px;
-            height: 100px;
-        }
-
-        .image-preview-item img {
-            width: 100%;
-            height: 100%;
+        .tour-image-preview {
+            width: 50px;
+            height: 50px;
             object-fit: cover;
             border-radius: 5px;
         }
-
-        .image-preview-item .remove-image {
-            position: absolute;
-            top: -5px;
-            right: -5px;
-            background-color: var(--danger-color);
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 20px;
-            height: 20px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
-        }
-
-        .file-input {
-            padding: 0.5rem;
-            border: 2px dashed #e0e0e0;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        .file-input:hover {
-            border-color: var(--primary-color);
-        }
-
-        .submit-btn {
-            background-color: var(--success-color);
-            color: white;
-            border: none;
-            padding: 1rem;
-            border-radius: 5px;
-            font-size: 1.1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background-color 0.3s;
-            margin-top: 1rem;
-        }
-
-        .submit-btn:hover {
-            background-color: #219a52;
-        }
-
-        /* Alert */
-        .alert {
-            padding: 1rem;
-            border-radius: 5px;
-            margin-bottom: 1rem;
-            display: none;
-        }
-
-        .alert-success {
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-
-        .alert-error {
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-
-        /* Loading Spinner */
-        .spinner {
-            display: none;
+        .image-upload-area {
+            border: 2px dashed #ddd;
+            border-radius: 10px;
+            padding: 20px;
             text-align: center;
-            padding: 2rem;
-        }
-
-        .spinner::after {
-            content: '';
-            display: inline-block;
-            width: 40px;
-            height: 40px;
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid var(--primary-color);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        /* Tabs */
-        .tabs {
-            display: flex;
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-            border-bottom: 2px solid #e0e0e0;
-            padding-bottom: 0.5rem;
-        }
-
-        .tab {
-            padding: 0.5rem 1rem;
             cursor: pointer;
+        }
+        .image-upload-area:hover {
+            border-color: var(--secondary-color);
+        }
+        .status-badge {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.85rem;
             font-weight: 500;
-            color: #666;
-            transition: all 0.3s;
         }
-
-        .tab:hover {
-            color: var(--primary-color);
-        }
-
-        .tab.active {
-            color: var(--primary-color);
-            border-bottom: 2px solid var(--primary-color);
-        }
-
-        .tab-content {
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        @media (max-width: 768px) {
-            .sidebar {
-                width: 60px;
-            }
-            
-            .sidebar-header h2, .sidebar-header p, .sidebar-menu-item span {
-                display: none;
-            }
-            
-            .main-content {
-                margin-left: 60px;
-                width: calc(100% - 60px);
-            }
-            
-            .form-row {
-                grid-template-columns: 1fr;
-            }
-        }
+        .status-confirmed { background: #d4edda; color: #155724; }
+        .status-pending { background: #fff3cd; color: #856404; }
+        .status-cancelled { background: #f8d7da; color: #721c24; }
     </style>
 </head>
 <body>
 <!-- Login Page -->
-<div id="loginContainer" class="login-container">
-    <div class="login-box">
-        <div class="login-header">
-            <h2>Admin Login</h2>
-            <p>Enter your credentials to access dashboard</p>
-        </div>
-        <form class="login-form" onsubmit="handleLogin(event)">
-            <input type="text" id="username" class="login-input" placeholder="Username" required>
-            <input type="password" id="password" class="login-input" placeholder="Password" required>
-            <button type="submit" class="login-btn">Login</button>
-        </form>
-        <div class="back-to-site">
-            <a href="/">← Back to Website</a>
+<div id="loginPage" class="container">
+    <div class="login-container">
+        <div class="card login-card">
+            <div class="login-header text-center">
+                <h4><i class="bi bi-shield-lock"></i> Admin Login</h4>
+            </div>
+            <div class="card-body p-4">
+                <form id="loginForm">
+                    <div class="mb-3">
+                        <label class="form-label">Username</label>
+                        <input type="text" class="form-control" id="username" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Password</label>
+                        <input type="password" class="form-control" id="password" required>
+                    </div>
+                    <button type="submit" class="btn btn-warning w-100">Login</button>
+                </form>
+            </div>
         </div>
     </div>
 </div>
 
-<!-- Dashboard -->
-<div id="dashboardContainer" class="dashboard-container">
-    <!-- Sidebar -->
-    <div class="sidebar">
-        <div class="sidebar-header">
-            <h2>AnandaHolidays</h2>
-            <p>Admin Panel</p>
-        </div>
-        <div class="sidebar-menu">
-            <div class="sidebar-menu-item active" onclick="switchTab('dashboard')">
-                <i>📊</i>
-                <span>Dashboard</span>
+<!-- Dashboard Page -->
+<div id="dashboardPage" style="display: none;">
+    <div class="wrapper">
+        <!-- Sidebar -->
+        <nav id="sidebar">
+            <div class="sidebar-header">
+                <h5><i class="bi bi-tree-fill"></i> AnandaHolidays</h5>
+                <small>Admin Panel</small>
             </div>
-            <div class="sidebar-menu-item" onclick="switchTab('tours')">
-                <i>🗺️</i>
-                <span>Tours</span>
-            </div>
-            <div class="sidebar-menu-item" onclick="switchTab('bookings')">
-                <i>📋</i>
-                <span>Bookings</span>
-            </div>
-            <div class="sidebar-menu-item" onclick="switchTab('add-tour')">
-                <i>➕</i>
-                <span>Add Tour</span>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Main Content -->
-    <div class="main-content">
-        <div class="header">
-            <h1 id="pageTitle">Dashboard</h1>
-            <button class="logout-btn" onclick="handleLogout()">Logout</button>
-        </div>
+            <ul class="list-unstyled components">
+                <li class="active"><a href="#" onclick="showSection('dashboard')"><i class="bi bi-speedometer2 me-2"></i> Dashboard</a></li>
+                <li><a href="#" onclick="showSection('tours')"><i class="bi bi-briefcase me-2"></i> Tours</a></li>
+                <li><a href="#" onclick="showSection('bookings')"><i class="bi bi-calendar-check me-2"></i> Bookings</a></li>
+                <li><a href="#" onclick="logout()"><i class="bi bi-box-arrow-right me-2"></i> Logout</a></li>
+            </ul>
+        </nav>
         
-        <!-- Alert Messages -->
-        <div id="adminAlert" class="alert"></div>
-        
-        <!-- Loading Spinner -->
-        <div id="adminSpinner" class="spinner"></div>
-        
-        <!-- Dashboard Tab -->
-        <div id="dashboardTab" class="tab-content active">
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <h3>Total Tours</h3>
-                    <div class="stat-value" id="totalTours">0</div>
+        <!-- Content -->
+        <div id="content">
+            <nav class="navbar navbar-expand-lg">
+                <div class="container-fluid">
+                    <button type="button" id="sidebarCollapse" class="btn btn-outline-secondary">
+                        <i class="bi bi-list"></i>
+                    </button>
+                    <span class="navbar-text" id="adminName"></span>
                 </div>
-                <div class="stat-card">
-                    <h3>Upcoming Tours</h3>
-                    <div class="stat-value" id="upcomingTours">0</div>
-                </div>
-                <div class="stat-card">
-                    <h3>Ongoing Tours</h3>
-                    <div class="stat-value" id="ongoingTours">0</div>
-                </div>
-                <div class="stat-card">
-                    <h3>Completed Tours</h3>
-                    <div class="stat-value" id="completedTours">0</div>
-                </div>
-                <div class="stat-card">
-                    <h3>Total Bookings</h3>
-                    <div class="stat-value" id="totalBookings">0</div>
-                </div>
-                <div class="stat-card">
-                    <h3>Confirmed Bookings</h3>
-                    <div class="stat-value" id="confirmedBookings">0</div>
-                </div>
-            </div>
+            </nav>
             
-            <h2 style="margin: 2rem 0 1rem;">Recent Bookings</h2>
-            <div class="table-container">
-                <table id="recentBookingsTable">
-                    <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Customer</th>
-                        <th>Tour</th>
-                        <th>Date</th>
-                        <th>Amount</th>
-                        <th>Status</th>
-                        <th>Actions</th>
-                    </tr>
-                    </thead>
-                    <tbody id="recentBookingsBody">
-                    <tr>
-                        <td colspan="7" style="text-align: center;">No recent bookings</td>
-                    </tr>
-                    </tbody>
-                </table>
+            <div class="container-fluid p-4">
+                <!-- Dashboard Section -->
+                <div id="dashboardSection">
+                    <h4 class="mb-4">Dashboard Overview</h4>
+                    <div class="row mb-4">
+                        <div class="col-md-3">
+                            <div class="card card-stats p-3">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h6 class="text-muted">Total Tours</h6>
+                                        <h3 id="totalTours">0</h3>
+                                    </div>
+                                    <div class="stat-icon bg-primary bg-opacity-10 text-primary">
+                                        <i class="bi bi-briefcase"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card card-stats p-3">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h6 class="text-muted">Active Tours</h6>
+                                        <h3 id="activeTours">0</h3>
+                                    </div>
+                                    <div class="stat-icon bg-success bg-opacity-10 text-success">
+                                        <i class="bi bi-check-circle"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card card-stats p-3">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h6 class="text-muted">Total Bookings</h6>
+                                        <h3 id="totalBookings">0</h3>
+                                    </div>
+                                    <div class="stat-icon bg-warning bg-opacity-10 text-warning">
+                                        <i class="bi bi-calendar-check"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card card-stats p-3">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h6 class="text-muted">Revenue</h6>
+                                        <h3 id="totalRevenue">₹0</h3>
+                                    </div>
+                                    <div class="stat-icon bg-info bg-opacity-10 text-info">
+                                        <i class="bi bi-currency-rupee"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="table-container">
+                                <h6 class="mb-3">Recent Bookings</h6>
+                                <div id="recentBookings"></div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="table-container">
+                                <h6 class="mb-3">Upcoming Tours</h6>
+                                <div id="upcomingToursList"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Tours Section -->
+                <div id="toursSection" style="display: none;">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h4>Manage Tours</h4>
+                        <button class="btn btn-warning" onclick="openTourModal()">
+                            <i class="bi bi-plus"></i> Add Tour
+                        </button>
+                    </div>
+                    <div class="table-container">
+                        <table class="table table-hover">
+                            <thead>
+                            <tr>
+                                <th>Image</th>
+                                <th>Name</th>
+                                <th>Destination</th>
+                                <th>Price</th>
+                                <th>Duration</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                            </thead>
+                            <tbody id="toursTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- Bookings Section -->
+                <div id="bookingsSection" style="display: none;">
+                    <h4 class="mb-4">Manage Bookings</h4>
+                    <div class="table-container">
+                        <table class="table table-hover">
+                            <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Customer</th>
+                                <th>Tour</th>
+                                <th>Adults/Children</th>
+                                <th>Total</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                            </thead>
+                            <tbody id="bookingsTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
-        </div>
-        
-        <!-- Tours Tab -->
-        <div id="toursTab" class="tab-content">
-            <div class="action-bar">
-                <button class="action-btn" onclick="switchTab('add-tour')">
-                    <span>➕</span> Add New Tour
-                </button>
-                <button class="action-btn secondary" onclick="loadTours()">
-                    <span>🔄</span> Refresh
-                </button>
-            </div>
-            
-            <div class="search-bar">
-                <input type="text" id="tourSearch" class="search-input" placeholder="Search tours..." onkeyup="searchTours()">
-                <select id="tourTypeFilter" class="search-input" onchange="filterTours()">
-                    <option value="">All Types</option>
-                    <option value="ADVENTURE">Adventure</option>
-                    <option value="RELIGIOUS">Religious</option>
-                    <option value="BEACH">Beach</option>
-                    <option value="HILL_STATION">Hill Station</option>
-                    <option value="WILDLIFE">Wildlife</option>
-                    <option value="HERITAGE">Heritage</option>
-                    <option value="FAMILY">Family</option>
-                    <option value="HONEYMOON">Honeymoon</option>
-                </select>
-                <select id="tourStatusFilter" class="search-input" onchange="filterTours()">
-                    <option value="">All Status</option>
-                    <option value="upcoming">Upcoming</option>
-                    <option value="ongoing">Ongoing</option>
-                    <option value="completed">Completed</option>
-                </select>
-            </div>
-            
-            <div class="table-container">
-                <table>
-                    <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Image</th>
-                        <th>Name</th>
-                        <th>Destination</th>
-                        <th>Price</th>
-                        <th>Type</th>
-                        <th>Status</th>
-                        <th>Actions</th>
-                    </tr>
-                    </thead>
-                    <tbody id="toursTableBody">
-                    <tr>
-                        <td colspan="8" style="text-align: center;">Loading tours...</td>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-        
-        <!-- Bookings Tab -->
-        <div id="bookingsTab" class="tab-content">
-            <div class="action-bar">
-                <button class="action-btn secondary" onclick="loadBookings()">
-                    <span>🔄</span> Refresh
-                </button>
-            </div>
-            
-            <div class="search-bar">
-                <input type="text" id="bookingSearch" class="search-input" placeholder="Search by customer name, email, or phone..." onkeyup="searchBookings()">
-            </div>
-            
-            <div class="tabs">
-                <div class="tab active" onclick="filterBookingsByStatus('all', this)">All</div>
-                <div class="tab" onclick="filterBookingsByStatus('CONFIRMED', this)">Confirmed</div>
-                <div class="tab" onclick="filterBookingsByStatus('PENDING', this)">Pending</div>
-                <div class="tab" onclick="filterBookingsByStatus('COMPLETED', this)">Completed</div>
-                <div class="tab" onclick="filterBookingsByStatus('CANCELLED', this)">Cancelled</div>
-            </div>
-            
-            <div class="table-container">
-                <table>
-                    <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Customer</th>
-                        <th>Tour</th>
-                        <th>Booking Date</th>
-                        <th>Adults/Child</th>
-                        <th>Amount</th>
-                        <th>Status</th>
-                        <th>Actions</th>
-                    </tr>
-                    </thead>
-                    <tbody id="bookingsTableBody">
-                    <tr>
-                        <td colspan="8" style="text-align: center;">Loading bookings...</td>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-        
-        <!-- Add/Edit Tour Tab -->
-        <div id="addTourTab" class="tab-content">
-            <h2 id="tourFormTitle">Add New Tour</h2>
-            <form id="tourForm" class="tour-form" onsubmit="saveTour(event)">
-                <input type="hidden" id="tourId">
-                
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">Tour Name *</label>
-                        <input type="text" id="tourName" class="form-input" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Price (₹) *</label>
-                        <input type="number" id="tourPrice" class="form-input" min="0" step="0.01" required>
-                    </div>
-                </div>
-                
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">Destination *</label>
-                        <input type="text" id="tourDestination" class="form-input" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Location *</label>
-                        <input type="text" id="tourLocation" class="form-input" required>
-                    </div>
-                </div>
-                
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">Days *</label>
-                        <input type="number" id="tourDays" class="form-input" min="1" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Nights *</label>
-                        <input type="number" id="tourNights" class="form-input" min="0" required>
-                    </div>
-                </div>
-                
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">Start Date *</label>
-                        <input type="date" id="tourStartingDate" class="form-input" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">End Date *</label>
-                        <input type="date" id="tourEndingDate" class="form-input" required>
-                    </div>
-                </div>
-                
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">Tour Type *</label>
-                        <select id="tourType" class="form-input" required>
-                            <option value="">Select Type</option>
-                            <option value="ADVENTURE">Adventure</option>
-                            <option value="RELIGIOUS">Religious</option>
-                            <option value="BEACH">Beach</option>
-                            <option value="HILL_STATION">Hill Station</option>
-                            <option value="WILDLIFE">Wildlife</option>
-                            <option value="HERITAGE">Heritage</option>
-                            <option value="FAMILY">Family</option>
-                            <option value="HONEYMOON">Honeymoon</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Helpline Number</label>
-                        <input type="text" id="tourHelplineNumber" class="form-input">
-                    </div>
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label">Description</label>
-                    <textarea id="tourDescription" class="form-textarea"></textarea>
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label">Map Embed URL</label>
-                    <input type="url" id="tourMapEmbedUrl" class="form-input">
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label">Inclusions (one per line)</label>
-                    <textarea id="tourInclusions" class="form-textarea" placeholder="Hotel accommodation&#10;Meals&#10;Transportation"></textarea>
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label">Exclusions (one per line)</label>
-                    <textarea id="tourExclusions" class="form-textarea" placeholder="Flight tickets&#10;Personal expenses"></textarea>
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label">Services (one per line)</label>
-                    <textarea id="tourServices" class="form-textarea" placeholder="Guide&#10;Pickup & Drop"></textarea>
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label">Main Tour Image</label>
-                    <input type="file" id="tourImage" class="file-input" accept="image/*">
-                    <div id="mainImagePreview" class="image-preview"></div>
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label">Additional Images</label>
-                    <input type="file" id="additionalImages" class="file-input" accept="image/*" multiple>
-                    <div id="additionalImagesPreview" class="image-preview"></div>
-                </div>
-                
-                <div id="existingImagesContainer" style="display: none;">
-                    <label class="form-label">Existing Images</label>
-                    <div id="existingImagesPreview" class="image-preview"></div>
-                </div>
-                
-                <button type="submit" class="submit-btn">Save Tour</button>
-                <button type="button" class="submit-btn" style="background-color: #666;" onclick="switchTab('tours')">Cancel</button>
-            </form>
         </div>
     </div>
 </div>
 
-<!-- Booking Details Modal -->
-<div id="bookingModal" class="modal">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h2 class="modal-title">Booking Details</h2>
-            <span class="close-modal" onclick="closeBookingDetailsModal()">&times;</span>
-        </div>
-        <div id="bookingDetails"></div>
-        <div style="margin-top: 1rem; display: flex; gap: 1rem;">
-            <select id="bookingStatusSelect" class="form-input" style="flex: 1;">
-                <option value="CONFIRMED">Confirmed</option>
-                <option value="PENDING">Pending</option>
-                <option value="COMPLETED">Completed</option>
-                <option value="CANCELLED">Cancelled</option>
-            </select>
-            <button class="action-btn" onclick="updateBookingStatus()">Update Status</button>
+<!-- Tour Modal -->
+<div class="modal fade" id="tourModal" tabindex="-1" data-bs-backdrop="static">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-warning">
+                <h5 class="modal-title" id="tourModalTitle">Add Tour</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="tourForm" enctype="multipart/form-data">
+                    <input type="hidden" id="tourId">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Tour Name</label>
+                            <input type="text" class="form-control" id="tourName" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Price (₹)</label>
+                            <input type="number" class="form-control" id="tourPrice" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Destination</label>
+                            <input type="text" class="form-control" id="tourDestination" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Location</label>
+                            <input type="text" class="form-control" id="tourLocation" required>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Days</label>
+                            <input type="number" class="form-control" id="tourDays" required>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Nights</label>
+                            <input type="number" class="form-control" id="tourNights" required>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Type</label>
+                            <select class="form-select" id="tourType" required>
+                                <option value="ADVENTURE">Adventure</option>
+                                <option value="BEACH">Beach</option>
+                                <option value="HILL_STATION">Hill Station</option>
+                                <option value="HERITAGE">Heritage</option>
+                                <option value="FAMILY">Family</option>
+                                <option value="HONEYMOON">Honeymoon</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Start Date</label>
+                            <input type="date" class="form-control" id="tourStartDate" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">End Date</label>
+                            <input type="date" class="form-control" id="tourEndDate" required>
+                        </div>
+                        <div class="col-12 mb-3">
+                            <label class="form-label">Description</label>
+                            <textarea class="form-control" id="tourDescription" rows="3"></textarea>
+                        </div>
+                        <div class="col-12 mb-3">
+                            <label class="form-label">Inclusions (comma separated)</label>
+                            <input type="text" class="form-control" id="tourInclusions" placeholder="Hotel, Meals, Guide">
+                        </div>
+                        <div class="col-12 mb-3">
+                            <label class="form-label">Exclusions (comma separated)</label>
+                            <input type="text" class="form-control" id="tourExclusions" placeholder="Flights, Insurance">
+                        </div>
+                        <div class="col-12 mb-3">
+                            <label class="form-label">Services (comma separated)</label>
+                            <input type="text" class="form-control" id="tourServices" placeholder="WiFi, Parking">
+                        </div>
+                        <div class="col-12 mb-3">
+                            <label class="form-label">Helpline Number</label>
+                            <input type="text" class="form-control" id="tourHelpline">
+                        </div>
+                        <div class="col-12 mb-3">
+                            <label class="form-label">Main Image</label>
+                            <input type="file" class="form-control" id="mainImage" accept="image/*">
+                        </div>
+                        <div class="col-12 mb-3">
+                            <label class="form-label">Additional Images</label>
+                            <input type="file" class="form-control" id="additionalImages" accept="image/*" multiple>
+                        </div>
+                        <div class="col-12" id="existingImagesContainer"></div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-warning" onclick="saveTour()">Save Tour</button>
+            </div>
         </div>
     </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-    // API Base URL
-    const API_BASE_URL = 'http://localhost:8080/api';
-    
-    // State
-    let authToken = null;
-    let currentUser = null;
-    let allTours = [];
-    let allBookings = [];
-    let currentBookingFilter = 'all';
-    let imagesToDelete = [];
+    const API_BASE = 'http://localhost:8080/api';
+    let authToken = localStorage.getItem('adminToken');
+    let currentAdmin = JSON.parse(localStorage.getItem('adminData') || '{}');
 
-    // Check for saved token
-    document.addEventListener('DOMContentLoaded', function() {
-        const savedToken = localStorage.getItem('adminToken');
-        if (savedToken) {
-            authToken = savedToken;
-            const savedUser = localStorage.getItem('adminUser');
-            if (savedUser) {
-                currentUser = JSON.parse(savedUser);
-            }
-            showDashboard();
-            loadDashboardData();
-        }
+    // Check authentication on load
+    if (authToken) {
+        document.getElementById('loginPage').style.display = 'none';
+        document.getElementById('dashboardPage').style.display = 'block';
+        document.getElementById('adminName').textContent = `Welcome, ${currentAdmin.username || 'Admin'}`;
+        loadDashboardData();
+    }
 
-        // Initialize image preview listeners
-        initImagePreview();
-    });
-
-    // Handle login
-    function handleLogin(event) {
-        event.preventDefault();
-
+    // Login form handler
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
         const username = document.getElementById('username').value;
         const password = document.getElementById('password').value;
 
-        fetch(`${API_BASE_URL}/auth/login`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ username, password })
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Invalid credentials');
+        try {
+            const response = await fetch(`${API_BASE}/auth/login`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password })
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                authToken = data.token;
+                localStorage.setItem('adminToken', authToken);
+                localStorage.setItem('adminData', JSON.stringify(data));
+                
+                document.getElementById('loginPage').style.display = 'none';
+                document.getElementById('dashboardPage').style.display = 'block';
+                document.getElementById('adminName').textContent = `Welcome, ${data.username}`;
+                
+                loadDashboardData();
+            } else {
+                alert('Invalid credentials');
             }
-            return response.json();
-        })
-        .then(data => {
-            authToken = data.token;
-            currentUser = data;
-            
-            localStorage.setItem('adminToken', authToken);
-            localStorage.setItem('adminUser', JSON.stringify(data));
-            
-            showDashboard();
-            loadDashboardData();
-            
-            showAlert('Login successful!', 'success');
-        })
-        .catch(error => {
-            showAlert(error.message, 'error');
-            console.error('Login error:', error);
-        });
-    }
-
-    // Show dashboard
-    function showDashboard() {
-        document.getElementById('loginContainer').style.display = 'none';
-        document.getElementById('dashboardContainer').style.display = 'block';
-    }
-
-    // Handle logout
-    function handleLogout() {
-        authToken = null;
-        currentUser = null;
-        localStorage.removeItem('adminToken');
-        localStorage.removeItem('adminUser');
-        document.getElementById('loginContainer').style.display = 'flex';
-        document.getElementById('dashboardContainer').style.display = 'none';
-    }
-
-    // Switch tabs
-    function switchTab(tabName) {
-        // Update sidebar active state
-        const menuItems = document.querySelectorAll('.sidebar-menu-item');
-        menuItems.forEach(item => item.classList.remove('active'));
-        
-        // Find and activate the clicked menu item
-        menuItems.forEach(item => {
-            if (item.getAttribute('onclick') && item.getAttribute('onclick').includes(tabName)) {
-                item.classList.add('active');
-            }
-        });
-
-        // Hide all tabs
-        const tabs = document.querySelectorAll('.tab-content');
-        tabs.forEach(tab => tab.classList.remove('active'));
-        
-        // Show selected tab
-        const selectedTab = document.getElementById(tabName + 'Tab');
-        if (selectedTab) {
-            selectedTab.classList.add('active');
+        } catch (error) {
+            alert('Login failed');
         }
-        
-        // Update page title
-        const titles = {
-            'dashboard': 'Dashboard',
-            'tours': 'Manage Tours',
-            'bookings': 'Manage Bookings',
-            'add-tour': 'Add New Tour'
-        };
-        const pageTitle = document.getElementById('pageTitle');
-        if (pageTitle) {
-            pageTitle.textContent = titles[tabName] || 'Dashboard';
-        }
+    });
 
-        // Load data if needed
-        if (tabName === 'tours') {
-            loadTours();
-        } else if (tabName === 'bookings') {
-            loadBookings();
-        } else if (tabName === 'add-tour') {
-            resetTourForm();
-        }
+    // Sidebar toggle
+    document.getElementById('sidebarCollapse').addEventListener('click', () => {
+        document.getElementById('sidebar').classList.toggle('active');
+        document.getElementById('content').classList.toggle('active');
+    });
+
+    // Show different sections
+    function showSection(section) {
+        document.querySelectorAll('#sidebar ul li').forEach(li => li.classList.remove('active'));
+        event.target.closest('li').classList.add('active');
+
+        document.getElementById('dashboardSection').style.display = section === 'dashboard' ? 'block' : 'none';
+        document.getElementById('toursSection').style.display = section === 'tours' ? 'block' : 'none';
+        document.getElementById('bookingsSection').style.display = section === 'bookings' ? 'block' : 'none';
+
+        if (section === 'tours') loadTours();
+        if (section === 'bookings') loadBookings();
     }
 
     // Load dashboard data
-    function loadDashboardData() {
-        showSpinner();
-        
-        Promise.all([
-            fetchWithAuth(`${API_BASE_URL}/admin/tours/all`),
-            fetchWithAuth(`${API_BASE_URL}/admin/bookings`)
-        ])
-        .then(([toursResponse, bookingsResponse]) => {
-            return Promise.all([toursResponse.json(), bookingsResponse.json()]);
-        })
-        .then(([tours, bookings]) => {
-            allTours = tours;
-            allBookings = bookings;
-
-            // Update stats
-            const upcoming = tours.filter(t => getTourStatus(t) === 'Upcoming').length;
-            const ongoing = tours.filter(t => getTourStatus(t) === 'Ongoing').length;
-            const completed = tours.filter(t => getTourStatus(t) === 'Completed').length;
-            const confirmedBookings = bookings.filter(b => b.bookingStatus === 'CONFIRMED').length;
+    async function loadDashboardData() {
+        try {
+            const [tours, bookings] = await Promise.all([
+                fetchWithAuth(`${API_BASE}/admin/tours`),
+                fetchWithAuth(`${API_BASE}/admin/bookings`)
+            ]);
 
             document.getElementById('totalTours').textContent = tours.length;
-            document.getElementById('upcomingTours').textContent = upcoming;
-            document.getElementById('ongoingTours').textContent = ongoing;
-            document.getElementById('completedTours').textContent = completed;
+            document.getElementById('activeTours').textContent = tours.filter(t => t.isActive).length;
             document.getElementById('totalBookings').textContent = bookings.length;
-            document.getElementById('confirmedBookings').textContent = confirmedBookings;
+            
+            const revenue = bookings.reduce((sum, b) => sum + (b.totalAmount || 0), 0);
+            document.getElementById('totalRevenue').textContent = `₹${revenue}`;
 
-            // Load recent bookings
-            loadRecentBookings(bookings.slice(0, 5));
-        })
-        .catch(error => {
-            showAlert('Failed to load dashboard data', 'error');
-            console.error('Error:', error);
-        })
-        .finally(() => {
-            hideSpinner();
-        });
-    }
-
-    // Load recent bookings
-    function loadRecentBookings(bookings) {
-        const tbody = document.getElementById('recentBookingsBody');
-        
-        if (!tbody) return;
-        
-        if (!bookings || bookings.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="7" style="text-align: center;">No recent bookings</td></tr>';
-            return;
-        }
-
-        tbody.innerHTML = bookings.map(booking => {
-            const statusClass = getBookingStatusClass(booking.bookingStatus);
-            return `
-                <tr>
-                    <td>#${booking.id}</td>
-                    <td>${booking.customerName}</td>
-                    <td>${booking.tour ? booking.tour.tourName : 'N/A'}</td>
-                    <td>${new Date(booking.bookingDate).toLocaleDateString()}</td>
-                    <td>₹${booking.totalAmount}</td>
-                    <td><span class="status-badge ${statusClass}">${booking.bookingStatus}</span></td>
-                    <td>
-                        <button class="table-btn view" onclick="viewBookingDetails(${booking.id})">View</button>
-                    </td>
-                </tr>
-            `;
-        }).join('');
-    }
-
-    // Get booking status class
-    function getBookingStatusClass(status) {
-        switch(status) {
-            case 'CONFIRMED': return 'status-confirmed';
-            case 'PENDING': return 'status-pending';
-            case 'CANCELLED': return 'status-cancelled';
-            case 'COMPLETED': return 'status-completed';
-            default: return '';
+            displayRecentBookings(bookings.slice(0, 5));
+            displayUpcomingTours(tours.filter(t => t.status === 'UPCOMING').slice(0, 5));
+        } catch (error) {
+            console.error('Error loading dashboard:', error);
         }
     }
 
     // Load tours
-    function loadTours() {
-        showSpinner();
-        fetchWithAuth(`${API_BASE_URL}/admin/tours/all`)
-            .then(response => response.json())
-            .then(tours => {
-                allTours = tours;
-                displayTours(tours);
-            })
-            .catch(error => {
-                showAlert('Failed to load tours', 'error');
-                console.error('Error:', error);
-            })
-            .finally(() => {
-                hideSpinner();
-            });
+    async function loadTours() {
+        try {
+            const tours = await fetchWithAuth(`${API_BASE}/admin/tours`);
+            displayTours(tours);
+        } catch (error) {
+            console.error('Error loading tours:', error);
+        }
+    }
+
+    // Load bookings
+    async function loadBookings() {
+        try {
+            const bookings = await fetchWithAuth(`${API_BASE}/admin/bookings`);
+            displayBookings(bookings);
+        } catch (error) {
+            console.error('Error loading bookings:', error);
+        }
     }
 
     // Display tours in table
     function displayTours(tours) {
         const tbody = document.getElementById('toursTableBody');
-        
-        if (!tbody) return;
-        
-        if (!tours || tours.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="8" style="text-align: center;">No tours found</td></tr>';
-            return;
-        }
-
-        tbody.innerHTML = tours.map(tour => {
-            const status = getTourStatus(tour);
-            const statusClass = getStatusClass(status);
-            const imageUrl = tour.tourImages && tour.tourImages.length > 0
-                ? `${API_BASE_URL}/images/tours/${tour.tourImages[0]}`
-                : 'https://via.placeholder.com/50';
-
-            return `
-                <tr>
-                    <td>#${tour.id}</td>
-                    <td>
-                        <img src="${imageUrl}" alt="${tour.tourName}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 5px;"
-                             onerror="this.src='https://via.placeholder.com/50'">
-                    </td>
-                    <td>${tour.tourName}</td>
-                    <td>${tour.tourDestination}</td>
-                    <td>₹${tour.tourPrice}</td>
-                    <td>${tour.tourType}</td>
-                    <td><span class="status-badge ${statusClass}">${status}</span></td>
-                    <td class="table-actions">
-                        <button class="table-btn edit" onclick="editTour(${tour.id})">Edit</button>
-                        <button class="table-btn delete" onclick="deleteTour(${tour.id})">Delete</button>
-                        <button class="table-btn view" onclick="viewTourBookings(${tour.id})">Bookings</button>
-                    </td>
-                </tr>
-            `;
-        }).join('');
+        tbody.innerHTML = tours.map(tour => `
+            <tr>
+                <td>
+                    <img src="${API_BASE}/images/${tour.tourImages?.[0] || 'default.jpg'}"
+                         class="tour-image-preview" alt="">
+                </td>
+                <td>${tour.tourName}</td>
+                <td>${tour.tourDestination}</td>
+                <td>₹${tour.tourPrice}</td>
+                <td>${tour.tourDays}D/${tour.tourNights}N</td>
+                <td><span class="badge badge-${tour.status?.toLowerCase()}">${tour.status || 'ACTIVE'}</span></td>
+                <td>
+                    <button class="btn btn-sm btn-primary btn-action" onclick="editTour(${tour.id})">
+                        <i class="bi bi-pencil"></i>
+                    </button>
+                    <button class="btn btn-sm btn-danger btn-action" onclick="deleteTour(${tour.id})">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </td>
+            </tr>
+        `).join('');
     }
 
-    // Get tour status
-    function getTourStatus(tour) {
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-        const startDate = new Date(tour.tourStartingDate);
-        const endDate = new Date(tour.tourEndingDate);
-
-        if (startDate > today) return 'Upcoming';
-        if (startDate <= today && endDate >= today) return 'Ongoing';
-        return 'Completed';
-    }
-
-    // Get status class
-    function getStatusClass(status) {
-        switch(status) {
-            case 'Upcoming': return 'status-pending';
-            case 'Ongoing': return 'status-confirmed';
-            case 'Completed': return 'status-completed';
-            default: return '';
-        }
-    }
-
-    // Search tours
-    function searchTours() {
-        const searchTerm = document.getElementById('tourSearch').value.toLowerCase();
-        const typeFilter = document.getElementById('tourTypeFilter').value;
-        const statusFilter = document.getElementById('tourStatusFilter').value;
-
-        let filtered = allTours;
-
-        if (searchTerm) {
-            filtered = filtered.filter(tour =>
-                tour.tourName.toLowerCase().includes(searchTerm) ||
-                tour.tourDestination.toLowerCase().includes(searchTerm)
-            );
-        }
-
-        if (typeFilter) {
-            filtered = filtered.filter(tour => tour.tourType === typeFilter);
-        }
-
-        if (statusFilter) {
-            filtered = filtered.filter(tour => getTourStatus(tour).toLowerCase() === statusFilter);
-        }
-
-        displayTours(filtered);
-    }
-
-    // Filter tours
-    function filterTours() {
-        searchTours();
-    }
-
-    // Reset tour form
-    function resetTourForm() {
-        const form = document.getElementById('tourForm');
-        if (form) form.reset();
-        
-        document.getElementById('tourId').value = '';
-        document.getElementById('tourFormTitle').textContent = 'Add New Tour';
-        
-        const mainPreview = document.getElementById('mainImagePreview');
-        if (mainPreview) mainPreview.innerHTML = '';
-        
-        const additionalPreview = document.getElementById('additionalImagesPreview');
-        if (additionalPreview) additionalPreview.innerHTML = '';
-        
-        const existingContainer = document.getElementById('existingImagesContainer');
-        if (existingContainer) existingContainer.style.display = 'none';
-        
-        const existingPreview = document.getElementById('existingImagesPreview');
-        if (existingPreview) existingPreview.innerHTML = '';
-        
-        imagesToDelete = [];
-    }
-
-    // Edit tour
-    function editTour(id) {
-        showSpinner();
-        
-        // Find the tour
-        const tour = allTours.find(t => t.id === id);
-        if (!tour) {
-            hideSpinner();
-            return;
-        }
-
-        // Fill form with tour data
-        document.getElementById('tourId').value = tour.id;
-        document.getElementById('tourName').value = tour.tourName;
-        document.getElementById('tourPrice').value = tour.tourPrice;
-        document.getElementById('tourDestination').value = tour.tourDestination;
-        document.getElementById('tourLocation').value = tour.tourLocation;
-        document.getElementById('tourDays').value = tour.tourDays;
-        document.getElementById('tourNights').value = tour.tourNights;
-        document.getElementById('tourStartingDate').value = tour.tourStartingDate;
-        document.getElementById('tourEndingDate').value = tour.tourEndingDate;
-        document.getElementById('tourType').value = tour.tourType;
-        document.getElementById('tourHelplineNumber').value = tour.tourHelplineNumber || '';
-        document.getElementById('tourDescription').value = tour.tourDescription || '';
-        document.getElementById('tourMapEmbedUrl').value = tour.tourMapEmbedUrl || '';
-        
-        // Handle arrays
-        document.getElementById('tourInclusions').value = tour.tourInclusions ? tour.tourInclusions.join('\n') : '';
-        document.getElementById('tourExclusions').value = tour.tourExclusions ? tour.tourExclusions.join('\n') : '';
-        document.getElementById('tourServices').value = tour.tourServices ? tour.tourServices.join('\n') : '';
-
-        // Show existing images
-        if (tour.tourImages && tour.tourImages.length > 0) {
-            document.getElementById('existingImagesContainer').style.display = 'block';
-            const preview = document.getElementById('existingImagesPreview');
-            preview.innerHTML = tour.tourImages.map((image, index) => `
-                <div class="image-preview-item" data-image="${image}">
-                    <img src="${API_BASE_URL}/images/tours/${image}" alt="Tour image">
-                    <button type="button" class="remove-image" onclick="markImageForDelete('${image}', this)">×</button>
-                </div>
-            `).join('');
-        }
-
-        document.getElementById('tourFormTitle').textContent = 'Edit Tour';
-        hideSpinner();
-        switchTab('add-tour');
-    }
-
-    // Mark image for delete
-    function markImageForDelete(imageName, button) {
-        if (confirm('Remove this image?')) {
-            const previewItem = button.closest('.image-preview-item');
-            if (previewItem) {
-                previewItem.remove();
-                imagesToDelete.push(imageName);
-            }
-        }
-    }
-
-    // Save tour
-    function saveTour(event) {
-        event.preventDefault();
-
-        const tourId = document.getElementById('tourId').value;
-        const isEdit = !!tourId;
-
-        // Prepare tour data
-        const tourData = {
-            tourName: document.getElementById('tourName').value,
-            tourPrice: parseFloat(document.getElementById('tourPrice').value),
-            tourDestination: document.getElementById('tourDestination').value,
-            tourLocation: document.getElementById('tourLocation').value,
-            tourDays: parseInt(document.getElementById('tourDays').value),
-            tourNights: parseInt(document.getElementById('tourNights').value),
-            tourStartingDate: document.getElementById('tourStartingDate').value,
-            tourEndingDate: document.getElementById('tourEndingDate').value,
-            tourType: document.getElementById('tourType').value,
-            tourHelplineNumber: document.getElementById('tourHelplineNumber').value,
-            tourDescription: document.getElementById('tourDescription').value,
-            tourMapEmbedUrl: document.getElementById('tourMapEmbedUrl').value,
-            tourInclusions: document.getElementById('tourInclusions').value.split('\n').filter(i => i.trim()),
-            tourExclusions: document.getElementById('tourExclusions').value.split('\n').filter(i => i.trim()),
-            tourServices: document.getElementById('tourServices').value.split('\n').filter(i => i.trim())
-        };
-
-        // For edit, collect existing images
-        if (isEdit) {
-            const existingImages = [];
-            const existingItems = document.querySelectorAll('#existingImagesPreview .image-preview-item');
-            existingItems.forEach(item => {
-                const imageName = item.getAttribute('data-image');
-                if (imageName) existingImages.push(imageName);
-            });
-            tourData.existingImages = existingImages;
-            tourData.imagesToDelete = imagesToDelete;
-        }
-
-        // Handle images
-        const formData = new FormData();
-        
-        // Add tour data as JSON
-        const tourBlob = new Blob([JSON.stringify(tourData)], { type: 'application/json' });
-        formData.append('tour', tourBlob);
-
-        // Add main image
-        const mainImage = document.getElementById('tourImage').files[0];
-        if (mainImage) {
-            formData.append('tourImage', mainImage);
-        }
-
-        // Add additional images
-        const additionalImages = document.getElementById('additionalImages').files;
-        for (let i = 0; i < additionalImages.length; i++) {
-            formData.append('additionalImages', additionalImages[i]);
-        }
-
-        showSpinner();
-
-        const url = isEdit
-            ? `${API_BASE_URL}/admin/tours/${tourId}`
-            : `${API_BASE_URL}/admin/tours`;
-        
-        const method = isEdit ? 'PUT' : 'POST';
-
-        fetchWithAuth(url, {
-            method: method,
-            body: formData
-        })
-        .then(response => {
-            if (!response.ok) {
-                return response.json().then(err => { throw new Error(err.message || 'Failed to save tour'); });
-            }
-            return response.json();
-        })
-        .then(savedTour => {
-            showAlert(`Tour ${isEdit ? 'updated' : 'created'} successfully!`, 'success');
-            loadTours();
-            switchTab('tours');
-        })
-        .catch(error => {
-            showAlert(error.message, 'error');
-            console.error('Error:', error);
-        })
-        .finally(() => {
-            hideSpinner();
-        });
-    }
-
-    // Delete tour
-    function deleteTour(id) {
-        if (!confirm('Are you sure you want to delete this tour? This action cannot be undone.')) {
-            return;
-        }
-
-        showSpinner();
-        fetchWithAuth(`${API_BASE_URL}/admin/tours/${id}`, {
-            method: 'DELETE'
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Failed to delete tour');
-            }
-            showAlert('Tour deleted successfully!', 'success');
-            loadTours();
-        })
-        .catch(error => {
-            showAlert(error.message, 'error');
-            console.error('Error:', error);
-        })
-        .finally(() => {
-            hideSpinner();
-        });
-    }
-
-    // Load bookings
-    function loadBookings() {
-        showSpinner();
-        fetchWithAuth(`${API_BASE_URL}/admin/bookings`)
-            .then(response => response.json())
-            .then(bookings => {
-                allBookings = bookings;
-                displayBookings(bookings);
-            })
-            .catch(error => {
-                showAlert('Failed to load bookings', 'error');
-                console.error('Error:', error);
-            })
-            .finally(() => {
-                hideSpinner();
-            });
-    }
-
-    // Display bookings
+    // Display bookings in table
     function displayBookings(bookings) {
         const tbody = document.getElementById('bookingsTableBody');
-        
-        if (!tbody) return;
-        
-        if (!bookings || bookings.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="8" style="text-align: center;">No bookings found</td></tr>';
-            return;
-        }
-
-        tbody.innerHTML = bookings.map(booking => {
-            const statusClass = getBookingStatusClass(booking.bookingStatus);
-            return `
-                <tr>
-                    <td>#${booking.id}</td>
-                    <td>
-                        <strong>${booking.customerName}</strong><br>
-                        <small>${booking.customerEmail}</small><br>
-                        <small>${booking.customerPhone}</small>
-                    </td>
-                    <td>${booking.tour ? booking.tour.tourName : 'N/A'}</td>
-                    <td>${new Date(booking.bookingDate).toLocaleString()}</td>
-                    <td>${booking.numberOfAdults} Adults, ${booking.numberOfChildren} Child</td>
-                    <td>₹${booking.totalAmount}</td>
-                    <td><span class="status-badge ${statusClass}">${booking.bookingStatus}</span></td>
-                    <td class="table-actions">
-                        <button class="table-btn view" onclick="viewBookingDetails(${booking.id})">View</button>
-                        <button class="table-btn edit" onclick="editBookingStatus(${booking.id})">Update</button>
-                        <button class="table-btn delete" onclick="deleteBooking(${booking.id})">Delete</button>
-                    </td>
-                </tr>
-            `;
-        }).join('');
+        tbody.innerHTML = bookings.map(booking => `
+            <tr>
+                <td>#${booking.id}</td>
+                <td>${booking.customerName}<br><small>${booking.customerEmail}</small></td>
+                <td>${booking.tour?.tourName}</td>
+                <td>${booking.numberOfAdults} / ${booking.numberOfChildren}</td>
+                <td>₹${booking.totalAmount}</td>
+                <td>
+                    <select class="form-select form-select-sm" onchange="updateBookingStatus(${booking.id}, this.value)">
+                        <option value="CONFIRMED" ${booking.bookingStatus === 'CONFIRMED' ? 'selected' : ''}>Confirmed</option>
+                        <option value="PENDING" ${booking.bookingStatus === 'PENDING' ? 'selected' : ''}>Pending</option>
+                        <option value="CANCELLED" ${booking.bookingStatus === 'CANCELLED' ? 'selected' : ''}>Cancelled</option>
+                        <option value="COMPLETED" ${booking.bookingStatus === 'COMPLETED' ? 'selected' : ''}>Completed</option>
+                    </select>
+                </td>
+                <td>
+                    <button class="btn btn-sm btn-danger btn-action" onclick="deleteBooking(${booking.id})">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </td>
+            </tr>
+        `).join('');
     }
 
-    // Filter bookings by status
-    function filterBookingsByStatus(status, element) {
-        currentBookingFilter = status;
-        
-        // Update tab active state
-        const tabs = document.querySelectorAll('#bookingsTab .tab');
-        tabs.forEach(tab => tab.classList.remove('active'));
-        
-        if (element) {
-            element.classList.add('active');
-        }
-
-        if (status === 'all') {
-            displayBookings(allBookings);
-        } else {
-            const filtered = allBookings.filter(b => b.bookingStatus === status);
-            displayBookings(filtered);
-        }
-    }
-
-    // Search bookings
-    function searchBookings() {
-        const searchTerm = document.getElementById('bookingSearch').value.toLowerCase();
-
-        let filtered = allBookings;
-
-        if (searchTerm) {
-            filtered = filtered.filter(booking =>
-                (booking.customerName && booking.customerName.toLowerCase().includes(searchTerm)) ||
-                (booking.customerEmail && booking.customerEmail.toLowerCase().includes(searchTerm)) ||
-                (booking.customerPhone && booking.customerPhone.includes(searchTerm)) ||
-                (booking.tour && booking.tour.tourName && booking.tour.tourName.toLowerCase().includes(searchTerm))
-            );
-        }
-
-        // Apply status filter
-        if (currentBookingFilter && currentBookingFilter !== 'all') {
-            filtered = filtered.filter(b => b.bookingStatus === currentBookingFilter);
-        }
-
-        displayBookings(filtered);
-    }
-
-    // View booking details
-    function viewBookingDetails(id) {
-        const booking = allBookings.find(b => b.id === id);
-        if (!booking) return;
-
-        const details = document.getElementById('bookingDetails');
-        const statusSelect = document.getElementById('bookingStatusSelect');
-        
-        if (statusSelect) {
-            statusSelect.value = booking.bookingStatus;
-        }
-        
-        // Store booking ID for updates
-        if (details) {
-            details.setAttribute('data-booking-id', id);
-        }
-        
-        const statusClass = getBookingStatusClass(booking.bookingStatus);
-        
-        details.innerHTML = `
-            <div style="margin-bottom: 1rem;">
-                <h3>Booking #${booking.id}</h3>
-                <p><strong>Status:</strong> <span class="status-badge ${statusClass}">${booking.bookingStatus}</span></p>
-            </div>
-            
-            <div style="margin-bottom: 1rem;">
-                <h4>Customer Details</h4>
-                <p><strong>Name:</strong> ${booking.customerName}</p>
-                <p><strong>Email:</strong> ${booking.customerEmail}</p>
-                <p><strong>Phone:</strong> ${booking.customerPhone}</p>
-            </div>
-            
-            <div style="margin-bottom: 1rem;">
-                <h4>Tour Details</h4>
-                <p><strong>Tour:</strong> ${booking.tour ? booking.tour.tourName : 'N/A'}</p>
-                <p><strong>Destination:</strong> ${booking.tour ? booking.tour.tourDestination : 'N/A'}</p>
-                <p><strong>Dates:</strong> ${booking.tour ? new Date(booking.tour.tourStartingDate).toLocaleDateString() : 'N/A'} - ${booking.tour ? new Date(booking.tour.tourEndingDate).toLocaleDateString() : 'N/A'}</p>
-            </div>
-            
-            <div style="margin-bottom: 1rem;">
-                <h4>Booking Details</h4>
-                <p><strong>Booking Date:</strong> ${new Date(booking.bookingDate).toLocaleString()}</p>
-                <p><strong>Adults:</strong> ${booking.numberOfAdults}</p>
-                <p><strong>Children:</strong> ${booking.numberOfChildren}</p>
-                <p><strong>Total Amount:</strong> ₹${booking.totalAmount}</p>
-                ${booking.specialRequests ? `<p><strong>Special Requests:</strong> ${booking.specialRequests}</p>` : ''}
-            </div>
-        `;
-
-        document.getElementById('bookingModal').style.display = 'block';
-    }
-
-    // Close booking details modal
-    function closeBookingDetailsModal() {
-        document.getElementById('bookingModal').style.display = 'none';
-    }
-
-    // Update booking status
-    function updateBookingStatus() {
-        const details = document.getElementById('bookingDetails');
-        const bookingId = details ? details.getAttribute('data-booking-id') : null;
-        const newStatus = document.getElementById('bookingStatusSelect').value;
-
-        if (!bookingId) {
-            showAlert('Booking ID not found', 'error');
-            return;
-        }
-
-        showSpinner();
-        fetchWithAuth(`${API_BASE_URL}/admin/bookings/${bookingId}/status?status=${newStatus}`, {
-            method: 'PUT'
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Failed to update booking status');
-            }
-            showAlert('Booking status updated successfully!', 'success');
-            closeBookingDetailsModal();
-            loadBookings();
-        })
-        .catch(error => {
-            showAlert(error.message, 'error');
-            console.error('Error:', error);
-        })
-        .finally(() => {
-            hideSpinner();
-        });
-    }
-
-    // Edit booking status
-    function editBookingStatus(id) {
-        viewBookingDetails(id);
-    }
-
-    // Delete booking
-    function deleteBooking(id) {
-        if (!confirm('Are you sure you want to delete this booking?')) {
-            return;
-        }
-
-        showSpinner();
-        fetchWithAuth(`${API_BASE_URL}/admin/bookings/${id}`, {
-            method: 'DELETE'
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Failed to delete booking');
-            }
-            showAlert('Booking deleted successfully!', 'success');
-            loadBookings();
-        })
-        .catch(error => {
-            showAlert(error.message, 'error');
-            console.error('Error:', error);
-        })
-        .finally(() => {
-            hideSpinner();
-        });
-    }
-
-    // View tour bookings
-    function viewTourBookings(tourId) {
-        const tour = allTours.find(t => t.id === tourId);
-        if (!tour) return;
-
-        const tourBookings = allBookings.filter(b => b.tour && b.tour.id === tourId);
-        displayBookings(tourBookings);
-        switchTab('bookings');
-    }
-
-    // Fetch with auth token
-    function fetchWithAuth(url, options = {}) {
-        const headers = {
-            'Authorization': `Bearer ${authToken}`,
-            ...options.headers
-        };
-
-        return fetch(url, {
+    // Helper function for authenticated requests
+    async function fetchWithAuth(url, options = {}) {
+        const response = await fetch(url, {
             ...options,
-            headers
-        })
-        .then(response => {
-            if (response.status === 401) {
-                handleLogout();
-                showAlert('Session expired. Please login again.', 'error');
-                throw new Error('Unauthorized');
+            headers: {
+                ...options.headers,
+                'Authorization': `Bearer ${authToken}`
             }
-            return response;
         });
-    }
-
-    // Show alert
-    function showAlert(message, type) {
-        const alert = document.getElementById('adminAlert');
-        if (!alert) return;
         
-        alert.className = `alert alert-${type}`;
-        alert.textContent = message;
-        alert.style.display = 'block';
-
-        setTimeout(() => {
-            alert.style.display = 'none';
-        }, 5000);
+        if (response.status === 401) {
+            logout();
+            throw new Error('Unauthorized');
+        }
+        
+        return response.json();
     }
 
-    // Show spinner
-    function showSpinner() {
-        const spinner = document.getElementById('adminSpinner');
-        if (spinner) {
-            spinner.style.display = 'block';
+    // Tour CRUD operations
+    function openTourModal() {
+        document.getElementById('tourModalTitle').textContent = 'Add New Tour';
+        document.getElementById('tourForm').reset();
+        document.getElementById('tourId').value = '';
+        new bootstrap.Modal(document.getElementById('tourModal')).show();
+    }
+
+   async function editTour(id) {
+    try {
+        const tour = await fetchWithAuth(`${API_BASE}/admin/tours/${id}`);
+        document.getElementById('tourModalTitle').textContent = 'Edit Tour';
+        document.getElementById('tourId').value = tour.id;
+        document.getElementById('tourName').value = tour.tourName || '';
+        document.getElementById('tourPrice').value = tour.tourPrice || '';
+        document.getElementById('tourDestination').value = tour.tourDestination || '';
+        document.getElementById('tourLocation').value = tour.tourLocation || '';
+        document.getElementById('tourDays').value = tour.tourDays || '';
+        document.getElementById('tourNights').value = tour.tourNights || '';
+        document.getElementById('tourType').value = tour.tourType || 'ADVENTURE';
+        
+        // Format dates for input fields (YYYY-MM-DD)
+        if (tour.tourStartingDate) {
+            document.getElementById('tourStartDate').value = tour.tourStartingDate;
+        }
+        if (tour.tourEndingDate) {
+            document.getElementById('tourEndDate').value = tour.tourEndingDate;
+        }
+        
+        document.getElementById('tourDescription').value = tour.tourDescription || '';
+        document.getElementById('tourInclusions').value = tour.tourInclusions?.join(', ') || '';
+        document.getElementById('tourExclusions').value = tour.tourExclusions?.join(', ') || '';
+        document.getElementById('tourServices').value = tour.tourServices?.join(', ') || '';
+        document.getElementById('tourHelpline').value = tour.tourHelplineNumber || '';
+
+        new bootstrap.Modal(document.getElementById('tourModal')).show();
+    } catch (error) {
+        console.error('Error loading tour details:', error);
+        alert('Error loading tour details');
+    }
+}
+    
+    
+ async function saveTour() {
+    const formData = new FormData();
+    
+    // Create tour data object
+    const tourData = {
+        tourName: document.getElementById('tourName').value,
+        tourPrice: parseFloat(document.getElementById('tourPrice').value),
+        tourDestination: document.getElementById('tourDestination').value,
+        tourLocation: document.getElementById('tourLocation').value,
+        tourDays: parseInt(document.getElementById('tourDays').value),
+        tourNights: parseInt(document.getElementById('tourNights').value),
+        tourType: document.getElementById('tourType').value,
+        tourStartingDate: document.getElementById('tourStartDate').value,
+        tourEndingDate: document.getElementById('tourEndDate').value,
+        tourDescription: document.getElementById('tourDescription').value,
+        tourInclusions: document.getElementById('tourInclusions').value.split(',').map(s => s.trim()).filter(s => s),
+        tourExclusions: document.getElementById('tourExclusions').value.split(',').map(s => s.trim()).filter(s => s),
+        tourServices: document.getElementById('tourServices').value.split(',').map(s => s.trim()).filter(s => s),
+        tourHelplineNumber: document.getElementById('tourHelpline').value
+    };
+
+    // Append tour data as JSON string (not as Blob)
+    formData.append('tour', JSON.stringify(tourData));
+
+    // Append main image if exists
+    const mainImage = document.getElementById('mainImage').files[0];
+    if (mainImage) {
+        formData.append('mainImage', mainImage);
+    }
+
+    // Append additional images
+    const additionalImages = document.getElementById('additionalImages').files;
+    for (let i = 0; i < additionalImages.length; i++) {
+        formData.append('additionalImages', additionalImages[i]);
+    }
+
+    // If editing, append existing images and images to delete
+    const tourId = document.getElementById('tourId').value;
+    if (tourId) {
+        // You can add logic here to handle existing images and images to delete
+        // For now, we'll just send empty lists
+        formData.append('existingImages', '[]');
+        formData.append('imagesToDelete', '[]');
+    }
+
+    const url = tourId ? `${API_BASE}/admin/tours/${tourId}` : `${API_BASE}/admin/tours`;
+    const method = tourId ? 'PUT' : 'POST';
+
+    try {
+        console.log('Sending request to:', url);
+        console.log('Tour data:', tourData);
+        
+        const response = await fetch(url, {
+            method: method,
+            headers: {
+                'Authorization': `Bearer ${authToken}`
+            },
+            body: formData
+        });
+
+        const responseText = await response.text();
+        console.log('Response status:', response.status);
+        console.log('Response text:', responseText);
+
+        if (!response.ok) {
+            throw new Error(`Failed to save tour: ${responseText}`);
+        }
+
+        const result = JSON.parse(responseText);
+        console.log('Tour saved successfully:', result);
+
+        bootstrap.Modal.getInstance(document.getElementById('tourModal')).hide();
+        await loadTours();
+        showToast('Tour saved successfully');
+    } catch (error) {
+        console.error('Error saving tour:', error);
+        alert('Error saving tour: ' + error.message);
+    }
+}
+
+
+    async function deleteTour(id) {
+        if (!confirm('Are you sure you want to delete this tour?')) return;
+
+        try {
+            await fetchWithAuth(`${API_BASE}/admin/tours/${id}`, { method: 'DELETE' });
+            loadTours();
+            showToast('Tour deleted successfully');
+        } catch (error) {
+            alert('Error deleting tour');
         }
     }
 
-    // Hide spinner
-    function hideSpinner() {
-        const spinner = document.getElementById('adminSpinner');
-        if (spinner) {
-            spinner.style.display = 'none';
+    async function updateBookingStatus(id, status) {
+        try {
+            await fetchWithAuth(`${API_BASE}/admin/bookings/${id}/status?status=${status}`, { method: 'PUT' });
+            loadBookings();
+            showToast('Booking status updated');
+        } catch (error) {
+            alert('Error updating status');
         }
     }
 
-    // Initialize image preview
-    function initImagePreview() {
-        const tourImage = document.getElementById('tourImage');
-        if (tourImage) {
-            tourImage.addEventListener('change', function(e) {
-                const preview = document.getElementById('mainImagePreview');
-                if (!preview) return;
-                
-                preview.innerHTML = '';
-                
-                if (this.files && this.files[0]) {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        const img = document.createElement('img');
-                        img.src = e.target.result;
-                        img.style.width = '100px';
-                        img.style.height = '100px';
-                        img.style.objectFit = 'cover';
-                        img.style.borderRadius = '5px';
-                        preview.appendChild(img);
-                    };
-                    reader.readAsDataURL(this.files[0]);
-                }
-            });
-        }
+    async function deleteBooking(id) {
+        if (!confirm('Are you sure you want to delete this booking?')) return;
 
-        const additionalImages = document.getElementById('additionalImages');
-        if (additionalImages) {
-            additionalImages.addEventListener('change', function(e) {
-                const preview = document.getElementById('additionalImagesPreview');
-                if (!preview) return;
-                
-                preview.innerHTML = '';
-                
-                for (let i = 0; i < this.files.length; i++) {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        const img = document.createElement('img');
-                        img.src = e.target.result;
-                        img.style.width = '100px';
-                        img.style.height = '100px';
-                        img.style.objectFit = 'cover';
-                        img.style.borderRadius = '5px';
-                        img.style.margin = '5px';
-                        preview.appendChild(img);
-                    };
-                    reader.readAsDataURL(this.files[i]);
-                }
-            });
+        try {
+            await fetchWithAuth(`${API_BASE}/admin/bookings/${id}`, { method: 'DELETE' });
+            loadBookings();
+            showToast('Booking deleted');
+        } catch (error) {
+            alert('Error deleting booking');
         }
     }
 
-    // Close modal when clicking outside
-    window.onclick = function(event) {
-        const modal = document.getElementById('bookingModal');
-        if (event.target === modal) {
-            modal.style.display = 'none';
+    function displayRecentBookings(bookings) {
+        const container = document.getElementById('recentBookings');
+        if (!bookings.length) {
+            container.innerHTML = '<p class="text-muted">No recent bookings</p>';
+            return;
         }
+
+        container.innerHTML = bookings.map(b => `
+            <div class="d-flex justify-content-between align-items-center mb-2 p-2 border-bottom">
+                <div>
+                    <strong>${b.customerName}</strong><br>
+                    <small>${b.tour?.tourName}</small>
+                </div>
+                <span class="status-badge status-${b.bookingStatus?.toLowerCase()}">${b.bookingStatus}</span>
+            </div>
+        `).join('');
+    }
+
+    function displayUpcomingTours(tours) {
+        const container = document.getElementById('upcomingToursList');
+        if (!tours.length) {
+            container.innerHTML = '<p class="text-muted">No upcoming tours</p>';
+            return;
+        }
+
+        container.innerHTML = tours.map(t => `
+            <div class="d-flex justify-content-between align-items-center mb-2 p-2 border-bottom">
+                <div>
+                    <strong>${t.tourName}</strong><br>
+                    <small>${t.tourStartingDate}</small>
+                </div>
+                <span class="badge bg-warning">${t.tourDays} Days</span>
+            </div>
+        `).join('');
+    }
+
+    function logout() {
+        localStorage.removeItem('adminToken');
+        localStorage.removeItem('adminData');
+        location.reload();
+    }
+
+    function showToast(message) {
+        // Simple alert for now
+        alert(message);
     }
 </script>
 </body>

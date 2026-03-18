@@ -1,3 +1,4 @@
+// ImageController.java
 package com.anandaholidays.controller;
 
 import com.anandaholidays.service.FileStorageService;
@@ -5,7 +6,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.io.IOException;
 
 @RestController
@@ -16,31 +16,24 @@ public class ImageController {
 
     private final FileStorageService fileStorageService;
 
-    @GetMapping("/tours/{fileName}")
-    public ResponseEntity<byte[]> getTourImage(@PathVariable String fileName) {
+    @GetMapping("/{fileName}")
+    public ResponseEntity<byte[]> getImage(@PathVariable String fileName) {
         try {
             byte[] imageData = fileStorageService.loadFile(fileName);
-
-            // Determine content type based on file extension
             MediaType mediaType = getMediaType(fileName);
-
-            return ResponseEntity.ok()
-                    .contentType(mediaType)
-                    .body(imageData);
+            return ResponseEntity.ok().contentType(mediaType).body(imageData);
         } catch (IOException e) {
             return ResponseEntity.notFound().build();
         }
     }
 
     private MediaType getMediaType(String fileName) {
-        if (fileName.endsWith(".png")) {
-            return MediaType.IMAGE_PNG;
-        } else if (fileName.endsWith(".jpg") || fileName.endsWith(".jpeg")) {
-            return MediaType.IMAGE_JPEG;
-        } else if (fileName.endsWith(".gif")) {
-            return MediaType.IMAGE_GIF;
-        } else {
-            return MediaType.APPLICATION_OCTET_STREAM;
-        }
+        String extension = fileName.substring(fileName.lastIndexOf(".") + 1).toLowerCase();
+        return switch (extension) {
+            case "png" -> MediaType.IMAGE_PNG;
+            case "jpg", "jpeg" -> MediaType.IMAGE_JPEG;
+            case "gif" -> MediaType.IMAGE_GIF;
+            default -> MediaType.APPLICATION_OCTET_STREAM;
+        };
     }
 }

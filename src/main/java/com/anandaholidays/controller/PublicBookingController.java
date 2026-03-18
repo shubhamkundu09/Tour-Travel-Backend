@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/bookings")
 @RequiredArgsConstructor
 @CrossOrigin(origins = "*")
-public class BookingController {
+public class PublicBookingController {
 
     private final BookingService bookingService;
 

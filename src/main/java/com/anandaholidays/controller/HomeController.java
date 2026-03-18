@@ -10,4 +10,9 @@ public class HomeController {
     public String home() {
         return "forward:/index.html";
     }
+
+    @GetMapping("/admin")
+    public String admin() {
+        return "forward:/admin.html";
+    }
 }

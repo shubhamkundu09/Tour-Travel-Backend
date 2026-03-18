@@ -45,10 +45,10 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/tours/**").permitAll()
                         .requestMatchers("/api/images/**").permitAll()
+                        .requestMatchers("/api/bookings/**").permitAll() // Make bookings public
 
                         // Protected endpoints
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/api/bookings/**").authenticated()
 
                         // Any other request needs authentication
                         .anyRequest().authenticated()
