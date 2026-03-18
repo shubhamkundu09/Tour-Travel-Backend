@@ -34,18 +34,20 @@ public class SecurityConfig {
                         .authenticationEntryPoint(jwtAuthenticationEntryPoint)
                 )
                 .authorizeHttpRequests(auth -> auth
-                        // Allow ALL static resources including HTML files
-                        .requestMatchers("/", "/index.html", "/admin.html").permitAll()
+                        // Public JSP pages
+                        .requestMatchers("/", "/index", "/home", "/admin", "/error").permitAll()
+                        .requestMatchers("/WEB-INF/jsp/**").permitAll()
+
+                        // Static resources
                         .requestMatchers("/static/**", "/css/**", "/js/**", "/images/**").permitAll()
                         .requestMatchers("/*.css", "/*.js", "/*.png", "/*.jpg", "/*.jpeg", "/*.gif", "/*.svg", "/*.ico").permitAll()
                         .requestMatchers("/favicon.ico").permitAll()
-                        .requestMatchers("/error").permitAll()
 
                         // Public API endpoints
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/tours/**").permitAll()
                         .requestMatchers("/api/images/**").permitAll()
-                        .requestMatchers("/api/bookings/**").permitAll() // Make bookings public
+                        .requestMatchers("/api/bookings/**").permitAll()
 
                         // Protected endpoints
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")

@@ -8,11 +8,16 @@ public class HomeController {
 
     @GetMapping("/")
     public String home() {
-        return "forward:/index.html";
+        return "index";
+    }
+
+    @GetMapping("/test")
+    public String test() {
+        return "test";
     }
 
     @GetMapping("/admin")
     public String admin() {
-        return "forward:/admin.html";
+        return "admin";
     }
 }
