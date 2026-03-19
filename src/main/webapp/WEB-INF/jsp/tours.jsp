@@ -4,10 +4,11 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Ananda Holidays</title>
+    <title>Ananda Holidays - Tour List</title>
 
-    <script type="module" crossorigin src="assets/main-C7XYgASq.js"></script>
-    <link rel="stylesheet" crossorigin href="assets/main-DDi0A8kK.css" />
+    <!-- FIX: Added context path to static resources -->
+    <script type="module" crossorigin src="${pageContext.request.contextPath}/static/assets/main-C7XYgASq.js"></script>
+    <link rel="stylesheet" crossorigin href="${pageContext.request.contextPath}/static/assets/main-DDi0A8kK.css" />
     <style>
       .destination-image {
         width: 100%;
@@ -68,7 +69,7 @@
         <!-- ====== Breadcrumb Section ====== -->
         <div
           class="breadcrumb-section bg-img jarallax"
-          style="background-image: url('assets/97-4pYTyMSj.jpg')"
+          style="background-image: url('${pageContext.request.contextPath}/static/assets/97-4pYTyMSj.jpg')"
         >
           <div class="container">
             <!-- Breadcrumb Content -->
@@ -99,7 +100,7 @@
                     <!-- Trip Card -->
                     <div class="col-12 col-lg-4">
                       <div class="trip-card fadeInUp" data-delay="0.2">
-                        <img src="./shubham/dodham.webp" alt="shubham" />
+                        <img src="${pageContext.request.contextPath}/static/shubham/dodham.webp" alt="shubham" />
                         <!-- Trip Body -->
                         <div class="trip-body">
                           <h4 class="mb-4 trip-title">Do Dham Yatra</h4>
@@ -132,7 +133,7 @@
                     <!-- Trip Card -->
                     <div class="col-12 col-lg-4">
                       <div class="trip-card fadeInUp" data-delay="0.2">
-                        <img src="./shubham/dodham.webp" alt="shubham" />
+                        <img src="${pageContext.request.contextPath}/static/shubham/dodham.webp" alt="shubham" />
                         <!-- Trip Body -->
                         <div class="trip-body">
                           <h4 class="mb-4 trip-title">Char Dham Yatra</h4>
@@ -163,7 +164,7 @@
                     <!-- Trip Card -->
                     <div class="col-12 col-lg-4">
                       <div class="trip-card fadeInUp" data-delay="0.2">
-                        <img src="./shubham/dubai.jpg" alt="shubham" />
+                        <img src="${pageContext.request.contextPath}/static/shubham/dubai.jpg" alt="shubham" />
                         <!-- Trip Body -->
                         <div class="trip-body">
                           <h4 class="mb-4 trip-title">Dubai Group Tour</h4>
@@ -196,7 +197,7 @@
                     <!-- Trip Card -->
                     <div class="col-12 col-lg-4">
                       <div class="trip-card fadeInUp" data-delay="0.2">
-                        <img src="./shubham/gujrat.jpg" alt="shubham" />
+                        <img src="${pageContext.request.contextPath}/static/shubham/gujrat.jpg" alt="shubham" />
                         <!-- Trip Body -->
                         <div class="trip-body">
                           <h4 class="mb-4 trip-title">Gujrat Group Tour</h4>
@@ -229,7 +230,7 @@
                     <!-- Trip Card -->
                     <div class="col-12 col-lg-4">
                       <div class="trip-card fadeInUp" data-delay="0.2">
-                        <img src="./shubham/andaman.webp" alt="shubham" />
+                        <img src="${pageContext.request.contextPath}/static/shubham/andaman.webp" alt="shubham" />
                         <!-- Trip Body -->
                         <div class="trip-body">
                           <h4 class="mb-4 trip-title">Andaman Group Tour</h4>
@@ -261,7 +262,7 @@
                     <!-- Trip Card -->
                     <div class="col-12 col-lg-4">
                       <div class="trip-card fadeInUp" data-delay="0.2">
-                        <img src="./shubham/jagannath.jpg" alt="shubham" />
+                        <img src="${pageContext.request.contextPath}/static/shubham/jagannath.jpg" alt="shubham" />
                         <!-- Trip Body -->
                         <div class="trip-body">
                           <h4 class="mb-4 trip-title">Jagannath Yatra</h4>
@@ -294,7 +295,7 @@
                     <!-- Trip Card -->
                     <div class="col-12 col-lg-4">
                       <div class="trip-card fadeInUp" data-delay="0.2">
-                        <img src="./shubham/southtemple.jpg" alt="shubham" />
+                        <img src="${pageContext.request.contextPath}/static/shubham/southtemple.jpg" alt="shubham" />
                         <!-- Trip Body -->
                         <div class="trip-body">
                           <h4 class="mb-4 trip-title">
@@ -329,7 +330,7 @@
                     <!-- Trip Card -->
                     <div class="col-12 col-lg-4">
                       <div class="trip-card fadeInUp" data-delay="0.2">
-                        <img src="./shubham/jagannath.jpg" alt="shubham" />
+                        <img src="${pageContext.request.contextPath}/static/shubham/jagannath.jpg" alt="shubham" />
                         <!-- Trip Body -->
                         <div class="trip-body">
                           <h4 class="mb-4 trip-title">
@@ -364,7 +365,7 @@
                     <!-- Trip Card -->
                     <div class="col-12 col-lg-4">
                       <div class="trip-card fadeInUp" data-delay="0.2">
-                        <img src="./shubham/muktinath.webp" alt="shubham" />
+                        <img src="${pageContext.request.contextPath}/static/shubham/muktinath.webp" alt="shubham" />
                         <!-- Trip Body -->
                         <div class="trip-body">
                           <h4 class="mb-4 trip-title">Muktinath Yatra</h4>
@@ -397,7 +398,7 @@
                     <!-- Trip Card -->
                     <div class="col-12 col-lg-4">
                       <div class="trip-card fadeInUp" data-delay="0.2">
-                        <img src="./shubham/pashupatinath.png" alt="shubham" />
+                        <img src="${pageContext.request.contextPath}/static/shubham/pashupatinath.png" alt="shubham" />
                         <!-- Trip Body -->
                         <div class="trip-body">
                           <h4 class="mb-4 trip-title">Pashupatinath Yatra</h4>
@@ -428,7 +429,7 @@
                     <!-- Trip Card -->
                     <div class="col-12 col-lg-4">
                       <div class="trip-card fadeInUp" data-delay="0.2">
-                        <img src="./shubham/gangasagar.jpg" alt="shubham" />
+                        <img src="${pageContext.request.contextPath}/static/shubham/gangasagar.jpg" alt="shubham" />
                         <!-- Trip Body -->
                         <div class="trip-body">
                           <h4 class="mb-4 trip-title">
@@ -465,7 +466,7 @@
                     <!-- Trip Card -->
                     <div class="col-12 col-lg-4">
                       <div class="trip-card fadeInUp" data-delay="0.2">
-                        <img src="./shubham/baidyanath.jpg" alt="shubham" />
+                        <img src="${pageContext.request.contextPath}/static/shubham/baidyanath.jpg" alt="shubham" />
                         <!-- Trip Body -->
                         <div class="trip-body">
                           <h4 class="mb-4 trip-title">

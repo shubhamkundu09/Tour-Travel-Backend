@@ -1,4 +1,3 @@
-// WebConfig.java (simplified)
 package com.anandaholidays.config;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -14,7 +13,19 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/uploads/tours/**")
+        // Handle uploads
+        registry.addResourceHandler("/uploads/**")
                 .addResourceLocations("file:" + uploadDir + "/");
+
+        // Handle static resources - THIS IS KEY
+        registry.addResourceHandler("/static/**")
+                .addResourceLocations("classpath:/static/");
+
+        // Also handle direct /assets and /shubham paths if needed
+        registry.addResourceHandler("/assets/**")
+                .addResourceLocations("classpath:/static/assets/");
+
+        registry.addResourceHandler("/shubham/**")
+                .addResourceLocations("classpath:/static/shubham/");
     }
 }

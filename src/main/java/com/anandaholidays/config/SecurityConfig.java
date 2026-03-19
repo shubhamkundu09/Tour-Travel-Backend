@@ -44,7 +44,7 @@ public class SecurityConfig {
                         .requestMatchers(new AntPathRequestMatcher("/index")).permitAll()
                         // Add this line in SecurityConfig.java
                         .requestMatchers(new AntPathRequestMatcher("/test")).permitAll()
-                        .requestMatchers(new AntPathRequestMatcher("/home")).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/tours")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/admin")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/error")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/WEB-INF/jsp/**")).permitAll()
