@@ -15,6 +15,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
 @EnableWebSecurity
@@ -34,23 +35,44 @@ public class SecurityConfig {
                         .authenticationEntryPoint(jwtAuthenticationEntryPoint)
                 )
                 .authorizeHttpRequests(auth -> auth
+                        // FIX: Use AntPathRequestMatcher explicitly because both JspServlet
+                        // and DispatcherServlet are registered. Spring Security cannot
+                        // auto-detect which matcher to use when multiple servlets exist.
+
                         // Public JSP pages
-                        .requestMatchers("/", "/index", "/home", "/admin", "/error").permitAll()
-                        .requestMatchers("/WEB-INF/jsp/**").permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/")).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/index")).permitAll()
+                        // Add this line in SecurityConfig.java
+                        .requestMatchers(new AntPathRequestMatcher("/test")).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/home")).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/admin")).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/error")).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/WEB-INF/jsp/**")).permitAll()
 
                         // Static resources
-                        .requestMatchers("/static/**", "/css/**", "/js/**", "/images/**").permitAll()
-                        .requestMatchers("/*.css", "/*.js", "/*.png", "/*.jpg", "/*.jpeg", "/*.gif", "/*.svg", "/*.ico").permitAll()
-                        .requestMatchers("/favicon.ico").permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/static/**")).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/css/**")).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/js/**")).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/images/**")).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/uploads/**")).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/*.css")).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/*.js")).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/*.png")).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/*.jpg")).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/*.jpeg")).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/*.gif")).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/*.svg")).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/*.ico")).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/favicon.ico")).permitAll()
 
                         // Public API endpoints
-                        .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/api/tours/**").permitAll()
-                        .requestMatchers("/api/images/**").permitAll()
-                        .requestMatchers("/api/bookings/**").permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/api/auth/**")).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/api/tours/**")).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/api/images/**")).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/api/bookings/**")).permitAll()
 
                         // Protected endpoints
-                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                        .requestMatchers(new AntPathRequestMatcher("/api/admin/**")).hasRole("ADMIN")
 
                         // Any other request needs authentication
                         .anyRequest().authenticated()

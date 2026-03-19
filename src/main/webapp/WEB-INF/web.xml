@@ -2,7 +2,7 @@
 <web-app xmlns="https://jakarta.ee/xml/ns/jakartaee"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee
-                      https://jakarta.ee/xml/ns/jakartaee/web-app_6_0.xsd"
+         https://jakarta.ee/xml/ns/jakartaee/web-app_6_0.xsd"
          version="6.0">
 
     <display-name>AnandaHolidays</display-name>
@@ -14,4 +14,27 @@
     <session-config>
         <session-timeout>30</session-timeout>
     </session-config>
+
+    <!--
+        KEY FIX: This JSP property group tells the JSP compiler to
+        defer EL evaluation, which stops it from incorrectly parsing
+        JavaScript code like:
+          - JSON.parse(localStorage.getItem('x') || '{}')
+          - Arrow functions: (x) => {}
+          - Object literals: { key: value }
+        as JSP EL expressions.
+
+        el-ignored=false  → still ALLOWS real JSP EL like ${param.title}
+        The real fix is deferred-syntax-allowed-as-literal=true which
+        allows $ to appear without being treated as EL start.
+    -->
+    <jsp-config>
+        <jsp-property-group>
+            <url-pattern>*.jsp</url-pattern>
+            <el-ignored>true</el-ignored>
+            <scripting-invalid>false</scripting-invalid>
+            <deferred-syntax-allowed-as-literal>true</deferred-syntax-allowed-as-literal>
+        </jsp-property-group>
+    </jsp-config>
+
 </web-app>

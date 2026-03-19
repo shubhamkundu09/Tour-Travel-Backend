@@ -12,6 +12,7 @@
     <groupId>com.anandaholidays</groupId>
     <artifactId>anandaholidays</artifactId>
     <version>1.0.0</version>
+    <packaging>war</packaging>
     <name>anandaholidays</name>
     <description>Tour and Travels Management System</description>
 
@@ -76,44 +77,35 @@
             <optional>true</optional>
         </dependency>
 
-<!--        add these dependencies for using jsp in my project-->
+        <!--
+            JSP SUPPORT — KEY RULES:
+            1. tomcat-embed-jasper must have NO scope (defaults to compile).
+               If you set it to "provided", IntelliJ Community won't put it on
+               the classpath when running main(), and JSPs won't compile.
 
-        <!-- Add these dependencies to your pom.xml -->
+            2. Do NOT add jakarta.servlet-api, jakarta.servlet.jsp-api,
+               or spring-boot-starter-tomcat with "provided" scope.
+               Embedded Tomcat already includes these. Adding them as "provided"
+               removes them from the classpath at runtime and causes
+               "Filter.class cannot be opened" errors.
+        -->
         <dependency>
             <groupId>org.apache.tomcat.embed</groupId>
             <artifactId>tomcat-embed-jasper</artifactId>
-            <scope>provided</scope>
+            <!-- NO scope tag here — must be compile (default) for embedded Tomcat -->
         </dependency>
 
+        <!-- JSTL support -->
         <dependency>
             <groupId>jakarta.servlet.jsp.jstl</groupId>
             <artifactId>jakarta.servlet.jsp.jstl-api</artifactId>
             <version>3.0.0</version>
         </dependency>
-
         <dependency>
             <groupId>org.glassfish.web</groupId>
             <artifactId>jakarta.servlet.jsp.jstl</artifactId>
             <version>3.0.1</version>
         </dependency>
-
-        <dependency>
-            <groupId>jakarta.servlet</groupId>
-            <artifactId>jakarta.servlet-api</artifactId>
-            <version>6.0.0</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>jakarta.servlet.jsp</groupId>
-            <artifactId>jakarta.servlet.jsp-api</artifactId>
-            <version>3.1.1</version>
-            <scope>provided</scope>
-        </dependency>
-
-
-
-
 
         <!-- Testing -->
         <dependency>
@@ -134,10 +126,7 @@
                 <directory>src/main/resources</directory>
                 <filtering>true</filtering>
             </resource>
-            <resource>
-                <directory>src/main/webapp</directory>
-                <targetPath>META-INF/resources</targetPath>
-            </resource>
+            <!-- No webapp resource block here — Maven WAR layout handles it automatically -->
         </resources>
         <plugins>
             <plugin>
