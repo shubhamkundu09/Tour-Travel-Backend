@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import java.nio.file.Paths;
 
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
@@ -13,19 +14,9 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        // Handle uploads
-        registry.addResourceHandler("/uploads/**")
-                .addResourceLocations("file:" + uploadDir + "/");
-
-        // Handle static resources - THIS IS KEY
-        registry.addResourceHandler("/static/**")
-                .addResourceLocations("classpath:/static/");
-
-        // Also handle direct /assets and /shubham paths if needed
-        registry.addResourceHandler("/assets/**")
-                .addResourceLocations("classpath:/static/assets/");
-
-        registry.addResourceHandler("/shubham/**")
-                .addResourceLocations("classpath:/static/shubham/");
+        // Convert to absolute path so Spring can locate the files
+        String absolutePath = Paths.get(uploadDir).toAbsolutePath().normalize().toString();
+        registry.addResourceHandler("/uploads/tours/**")
+                .addResourceLocations("file:" + absolutePath + "/");
     }
 }

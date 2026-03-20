@@ -3,6 +3,7 @@
 <c:set var="ctx" value="${pageContext.request.contextPath}" />
 
 <header class="header-area style-five">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.34.0/dist/tabler-icons.min.css" />
   <!-- Navbar -->
   <nav class="navbar navbar-expand-xl px-3 px-lg-4 px-xxl-5">
     <!-- Navbar Brand -->
@@ -49,10 +50,10 @@
           <a href="/destinations">Destinations </a>
         </li>
         <li>
-          <a href="#0">About Us </a>
+          <a href="/about">About Us </a>
         </li>
         <li>
-          <a href="#0">Gallery</a>
+          <a href="/gallery">Gallery</a>
         </li>
         <li>
           <a href="/contact">Contact</a>

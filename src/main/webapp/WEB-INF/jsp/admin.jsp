@@ -59,6 +59,7 @@
             transition: all 0.3s;
             margin: 5px 10px;
             border-radius: 5px;
+            cursor: pointer;
         }
 
         .sidebar .nav-link:hover,
@@ -318,16 +319,16 @@
             </div>
 
             <nav class="nav flex-column">
-                <a class="nav-link active" href="#" onclick="showSection('dashboard')">
+                <a class="nav-link active" href="#" onclick="showSection('dashboard', event)">
                     <i class="fas fa-tachometer-alt"></i> Dashboard
                 </a>
-                <a class="nav-link" href="#" onclick="showSection('tours')">
+                <a class="nav-link" href="#" onclick="showSection('tours', event)">
                     <i class="fas fa-map-marked-alt"></i> Manage Tours
                 </a>
-                <a class="nav-link" href="#" onclick="showSection('bookings')">
+                <a class="nav-link" href="#" onclick="showSection('bookings', event)">
                     <i class="fas fa-calendar-check"></i> Manage Bookings
                 </a>
-                <a class="nav-link" href="#" onclick="logout()">
+                <a class="nav-link" href="#" onclick="logout(event)">
                     <i class="fas fa-sign-out-alt"></i> Logout
                 </a>
             </nav>
@@ -485,10 +486,10 @@
                 <div class="row align-items-center">
                     <div class="col-md-6">
                         <div class="btn-group" role="group">
-                            <button type="button" class="btn btn-outline-primary active" onclick="filterTours('all')">All</button>
-                            <button type="button" class="btn btn-outline-warning" onclick="filterTours('UPCOMING')">Upcoming</button>
-                            <button type="button" class="btn btn-outline-info" onclick="filterTours('ONGOING')">Ongoing</button>
-                            <button type="button" class="btn btn-outline-secondary" onclick="filterTours('COMPLETED')">Completed</button>
+                            <button type="button" class="btn btn-outline-primary active" onclick="filterTours('all', event)">All</button>
+                            <button type="button" class="btn btn-outline-warning" onclick="filterTours('UPCOMING', event)">Upcoming</button>
+                            <button type="button" class="btn btn-outline-info" onclick="filterTours('ONGOING', event)">Ongoing</button>
+                            <button type="button" class="btn btn-outline-secondary" onclick="filterTours('COMPLETED', event)">Completed</button>
                         </div>
                     </div>
                     <div class="col-md-6 text-end">
@@ -566,7 +567,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <form id="tourForm" enctype="multipart/form-data">
+                <form id="tourForm">
                     <input type="hidden" id="tourId">
 
                     <!-- Basic Information -->
@@ -736,27 +737,43 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
-
-
 <script>
     // API Configuration
     const API_BASE_URL = window.location.origin + '/api';
 
-    // Create axios instance with interceptor for token
+    // Debug function
+    function debugLog(...args) {
+        console.log('[DEBUG]', ...args);
+    }
+
+    // Create axios instance
     const api = axios.create({
-        baseURL: API_BASE_URL
+        baseURL: API_BASE_URL,
+        timeout: 10000 // Add timeout
     });
 
     // Request interceptor to add token to every request
     api.interceptors.request.use(
         function(config) {
             const token = localStorage.getItem('adminToken');
+            debugLog('Request interceptor - URL:', config.url);
+            debugLog('Request interceptor - Token exists:', !!token);
+
             if (token) {
+                // Make sure token is properly formatted
                 config.headers.Authorization = 'Bearer ' + token;
+                debugLog('Request interceptor - Auth header set:', config.headers.Authorization.substring(0, 20) + '...');
+            } else {
+                debugLog('Request interceptor - No token found');
             }
+
+            // Log full headers for debugging
+            debugLog('Request interceptor - Full headers:', config.headers);
+
             return config;
         },
         function(error) {
+            debugLog('Request interceptor error:', error);
             return Promise.reject(error);
         }
     );
@@ -764,43 +781,114 @@
     // Response interceptor to handle 401 errors
     api.interceptors.response.use(
         function(response) {
+            debugLog('Response interceptor - Success:', response.config.url, response.status);
             return response;
         },
         function(error) {
-            if (error.response && error.response.status === 401) {
-                // Token expired or invalid
+            debugLog('Response interceptor - Error:', error.config?.url, error.response?.status);
+
+            if (error.response) {
+                debugLog('Response interceptor - Error data:', error.response.data);
+                debugLog('Response interceptor - Error headers:', error.response.headers);
+
+                if (error.response.status === 401) {
+                    const token = localStorage.getItem('adminToken');
+                    debugLog('Response interceptor - 401 error. Token exists:', !!token);
+
+                    if (token) {
+                        // Try to decode token to see if it's valid
+                        try {
+                            const base64Url = token.split('.')[1];
+                            const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                            const payload = JSON.parse(window.atob(base64));
+                            debugLog('Response interceptor - Token payload:', payload);
+
+                            // Check if token is expired
+                            const exp = payload.exp * 1000; // Convert to milliseconds
+                            const now = Date.now();
+                            debugLog('Response interceptor - Token expiration:', new Date(exp));
+                            debugLog('Response interceptor - Current time:', new Date(now));
+                            debugLog('Response interceptor - Token expired:', exp < now);
+                        } catch (e) {
+                            debugLog('Response interceptor - Error decoding token:', e);
+                        }
+                    }
+
+                    // Don't automatically logout, just return the error
+                    return Promise.reject(error);
+                }
+            }
+
+            return Promise.reject(error);
+        }
+    );
+
+    // Initialize date pickers and check login status
+    document.addEventListener('DOMContentLoaded', function() {
+        debugLog('DOM loaded - Initializing');
+
+        flatpickr(".datepicker", {
+            dateFormat: "Y-m-d",
+            minDate: "today"
+        });
+
+        // Check if user is logged in
+        const token = localStorage.getItem('adminToken');
+        debugLog('DOM loaded - Token found:', !!token);
+
+        if (token) {
+            debugLog('DOM loaded - Token exists, showing dashboard');
+            // Verify token is valid before showing dashboard
+            verifyTokenAndShowDashboard();
+        } else {
+            debugLog('DOM loaded - No token found, showing login');
+        }
+    });
+
+    // Function to verify token and show dashboard
+    async function verifyTokenAndShowDashboard() {
+        showLoading();
+        try {
+            debugLog('Verifying token with a test request');
+
+            // Try to make a simple request to verify token
+            const response = await api.get('/admin/tours', {
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem('adminToken')
+                }
+            });
+
+            debugLog('Token verification successful:', response.status);
+            showDashboard();
+            loadDashboardData();
+
+        } catch (error) {
+            debugLog('Token verification failed:', error.response?.status);
+
+            if (error.response?.status === 401) {
+                debugLog('Token invalid or expired, clearing storage');
                 localStorage.removeItem('adminToken');
                 localStorage.removeItem('adminName');
                 localStorage.removeItem('adminEmail');
                 showLoginPage();
+
                 Swal.fire({
                     icon: 'error',
                     title: 'Session Expired',
                     text: 'Please login again'
                 });
+            } else {
+                // Other error, maybe server is down
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Connection Error',
+                    text: 'Unable to connect to server'
+                });
             }
-            return Promise.reject(error);
+        } finally {
+            hideLoading();
         }
-    );
-
-    // Store JWT token
-    let authToken = null;
-
-    // Initialize date pickers
-    flatpickr(".datepicker", {
-        dateFormat: "Y-m-d",
-        minDate: "today"
-    });
-
-    // Check if user is logged in
-    document.addEventListener('DOMContentLoaded', function() {
-        const token = localStorage.getItem('adminToken');
-        if (token) {
-            authToken = token;
-            showDashboard();
-            loadDashboardData();
-        }
-    });
+    }
 
     // Show/hide loading overlay
     function showLoading() {
@@ -831,25 +919,30 @@
         loginError.style.display = 'none';
 
         try {
+            debugLog('Attempting login...');
+
             // Use regular axios for login (no token needed)
             const response = await axios.post(API_BASE_URL + '/auth/login', {
                 username: username,
                 password: password
             });
 
-            const data = response.data;
-            authToken = data.token;
+            debugLog('Login response:', response.data);
 
-            // Store token
-            localStorage.setItem('adminToken', authToken);
+            const data = response.data;
+
+            // Store token and user info
+            localStorage.setItem('adminToken', data.token);
             localStorage.setItem('adminName', data.username);
             localStorage.setItem('adminEmail', data.email);
 
-            showDashboard();
-            loadDashboardData();
+            debugLog('Token stored:', data.token.substring(0, 20) + '...');
+
+            // Verify the token works before proceeding
+            await verifyTokenAndShowDashboard();
 
         } catch (error) {
-            console.error('Login error:', error);
+            debugLog('Login error:', error);
             loginError.textContent = error.response?.data?.message || 'Invalid username or password';
             loginError.style.display = 'block';
         } finally {
@@ -870,7 +963,11 @@
         setInterval(updateDateTime, 1000);
     }
 
-    function logout() {
+    function logout(event) {
+        if (event) {
+            event.preventDefault();
+        }
+
         Swal.fire({
             title: 'Logout',
             text: 'Are you sure you want to logout?',
@@ -881,10 +978,10 @@
             confirmButtonText: 'Yes, logout'
         }).then((result) => {
             if (result.isConfirmed) {
+                debugLog('Logging out, clearing storage');
                 localStorage.removeItem('adminToken');
                 localStorage.removeItem('adminName');
                 localStorage.removeItem('adminEmail');
-                authToken = null;
                 showLoginPage();
             }
         });
@@ -900,13 +997,22 @@
         document.getElementById('content').classList.toggle('active');
     }
 
-    function showSection(section) {
+    function showSection(section, event) {
+        if (event) {
+            event.preventDefault();
+        }
+
+        debugLog('Showing section:', section);
+
         // Update active nav link
         const navLinks = document.querySelectorAll('.sidebar .nav-link');
-        for (let i = 0; i < navLinks.length; i++) {
-            navLinks[i].classList.remove('active');
+        navLinks.forEach(link => link.classList.remove('active'));
+        if (event && event.target) {
+            const clickedLink = event.target.closest('.nav-link');
+            if (clickedLink) {
+                clickedLink.classList.add('active');
+            }
         }
-        event.target.closest('.nav-link').classList.add('active');
 
         // Show selected section
         document.getElementById('dashboardSection').style.display = section === 'dashboard' ? 'block' : 'none';
@@ -914,7 +1020,7 @@
         document.getElementById('bookingsSection').style.display = section === 'bookings' ? 'block' : 'none';
 
         if (section === 'tours') {
-            loadTours();
+            loadTours('all');
         } else if (section === 'bookings') {
             loadBookings();
         }
@@ -925,10 +1031,15 @@
     async function loadDashboardData() {
         showLoading();
         try {
-            const toursRes = await api.get('/admin/tours');
-            const bookingsRes = await api.get('/admin/bookings');
+            debugLog('Loading dashboard data...');
 
-            const tours = toursRes.data;
+            // Test with a simple request first
+            const testResponse = await api.get('/admin/tours');
+            debugLog('Test request successful:', testResponse.status);
+
+            const tours = testResponse.data;
+
+            const bookingsRes = await api.get('/admin/bookings');
             const bookings = bookingsRes.data;
 
             // Update stats
@@ -940,8 +1051,7 @@
             let upcoming = 0;
             let ongoing = 0;
 
-            for (let i = 0; i < tours.length; i++) {
-                const tour = tours[i];
+            tours.forEach(tour => {
                 const start = new Date(tour.tourStartingDate);
                 const end = new Date(tour.tourEndingDate);
 
@@ -950,61 +1060,52 @@
                 } else if (start <= now && end >= now) {
                     ongoing++;
                 }
-            }
+            });
 
             document.getElementById('upcomingTours').textContent = upcoming;
             document.getElementById('ongoingTours').textContent = ongoing;
 
             // Recent upcoming tours
-            const upcomingTours = [];
-            for (let i = 0; i < tours.length; i++) {
-                const tour = tours[i];
-                if (new Date(tour.tourStartingDate) > now) {
-                    upcomingTours.push(tour);
-                }
-            }
-            upcomingTours.sort((a, b) => new Date(a.tourStartingDate) - new Date(b.tourStartingDate));
+            const upcomingTours = tours
+                .filter(tour => new Date(tour.tourStartingDate) > now)
+                .sort((a, b) => new Date(a.tourStartingDate) - new Date(b.tourStartingDate))
+                .slice(0, 5);
 
             let upcomingHtml = '';
-            for (let i = 0; i < Math.min(5, upcomingTours.length); i++) {
-                const tour = upcomingTours[i];
+            upcomingTours.forEach(tour => {
                 upcomingHtml += '<tr>' +
                     '<td>' + escapeHtml(tour.tourName) + '</td>' +
                     '<td>' + formatDate(tour.tourStartingDate) + '</td>' +
                     '<td>₹' + formatPrice(tour.tourPrice) + '</td>' +
                     '<td><button class="btn btn-sm btn-primary" onclick="editTour(' + tour.id + ')"><i class="fas fa-edit"></i></button></td>' +
                 '</tr>';
-            }
+            });
             document.getElementById('recentUpcomingTours').innerHTML = upcomingHtml || '<tr><td colspan="4" class="text-center">No upcoming tours</td></tr>';
 
             // Recent ongoing tours
-            const ongoingTours = [];
-            for (let i = 0; i < tours.length; i++) {
-                const tour = tours[i];
-                const start = new Date(tour.tourStartingDate);
-                const end = new Date(tour.tourEndingDate);
-                if (start <= now && end >= now) {
-                    ongoingTours.push(tour);
-                }
-            }
+            const ongoingTours = tours
+                .filter(tour => {
+                    const start = new Date(tour.tourStartingDate);
+                    const end = new Date(tour.tourEndingDate);
+                    return start <= now && end >= now;
+                })
+                .slice(0, 5);
 
             let ongoingHtml = '';
-            for (let i = 0; i < Math.min(5, ongoingTours.length); i++) {
-                const tour = ongoingTours[i];
+            ongoingTours.forEach(tour => {
                 ongoingHtml += '<tr>' +
                     '<td>' + escapeHtml(tour.tourName) + '</td>' +
                     '<td>' + formatDate(tour.tourEndingDate) + '</td>' +
                     '<td>₹' + formatPrice(tour.tourPrice) + '</td>' +
                     '<td><button class="btn btn-sm btn-primary" onclick="editTour(' + tour.id + ')"><i class="fas fa-edit"></i></button></td>' +
                 '</tr>';
-            }
+            });
             document.getElementById('recentOngoingTours').innerHTML = ongoingHtml || '<tr><td colspan="4" class="text-center">No ongoing tours</td></tr>';
 
             // Recent bookings
             const recentBookings = bookings.slice(0, 5);
             let bookingsHtml = '';
-            for (let i = 0; i < recentBookings.length; i++) {
-                const booking = recentBookings[i];
+            recentBookings.forEach(booking => {
                 let statusClass = '';
                 if (booking.bookingStatus === 'CONFIRMED') statusClass = 'bg-success';
                 else if (booking.bookingStatus === 'PENDING') statusClass = 'bg-warning';
@@ -1019,13 +1120,17 @@
                     '<td><span class="badge ' + statusClass + '">' + (booking.bookingStatus || 'PENDING') + '</span></td>' +
                     '<td><button class="btn btn-sm btn-info" onclick="updateBookingStatusModal(' + booking.id + ', \'' + (booking.bookingStatus || 'PENDING') + '\')"><i class="fas fa-sync-alt"></i></button></td>' +
                 '</tr>';
-            }
+            });
             document.getElementById('recentBookings').innerHTML = bookingsHtml || '<tr><td colspan="6" class="text-center">No recent bookings</td></tr>';
 
         } catch (error) {
-            console.error('Error loading dashboard:', error);
+            debugLog('Error loading dashboard:', error);
+
             if (error.response?.status === 401) {
+                debugLog('401 error in loadDashboardData, redirecting to login');
                 logout();
+            } else {
+                Swal.fire('Error', 'Failed to load dashboard data', 'error');
             }
         } finally {
             hideLoading();
@@ -1037,33 +1142,29 @@
     async function loadTours(filter) {
         showLoading();
         try {
+            debugLog('Loading tours with filter:', filter);
+
             const response = await api.get('/admin/tours');
             let tours = response.data;
 
             // Filter tours based on status
             const now = new Date();
             if (filter && filter !== 'all') {
-                const filteredTours = [];
-                for (let i = 0; i < tours.length; i++) {
-                    const tour = tours[i];
+                tours = tours.filter(tour => {
                     const start = new Date(tour.tourStartingDate);
                     const end = new Date(tour.tourEndingDate);
 
-                    if (filter === 'UPCOMING' && start > now) {
-                        filteredTours.push(tour);
-                    } else if (filter === 'ONGOING' && start <= now && end >= now) {
-                        filteredTours.push(tour);
-                    } else if (filter === 'COMPLETED' && end < now) {
-                        filteredTours.push(tour);
-                    }
-                }
-                tours = filteredTours;
+                    if (filter === 'UPCOMING') return start > now;
+                    if (filter === 'ONGOING') return start <= now && end >= now;
+                    if (filter === 'COMPLETED') return end < now;
+                    return true;
+                });
             }
 
             displayTours(tours);
 
         } catch (error) {
-            console.error('Error loading tours:', error);
+            debugLog('Error loading tours:', error);
             if (error.response?.status === 401) {
                 logout();
             } else {
@@ -1085,8 +1186,7 @@
         let html = '';
         const now = new Date();
 
-        for (let i = 0; i < tours.length; i++) {
-            const tour = tours[i];
+        tours.forEach(tour => {
             const start = new Date(tour.tourStartingDate);
             const end = new Date(tour.tourEndingDate);
 
@@ -1120,18 +1220,25 @@
                     '<button class="btn btn-sm btn-danger" onclick="deleteTour(' + tour.id + ')"><i class="fas fa-trash"></i></button>' +
                 '</div></td>' +
             '</tr>';
-        }
+        });
 
         tbody.innerHTML = html;
     }
 
-    function filterTours(status) {
+    function filterTours(status, event) {
+        if (event) {
+            event.preventDefault();
+        }
+
         // Update active button
         const buttons = document.querySelectorAll('.filter-section .btn');
-        for (let i = 0; i < buttons.length; i++) {
-            buttons[i].classList.remove('active');
+        buttons.forEach(btn => btn.classList.remove('active'));
+        if (event && event.target) {
+            const clickedBtn = event.target.closest('.btn');
+            if (clickedBtn) {
+                clickedBtn.classList.add('active');
+            }
         }
-        event.target.classList.add('active');
 
         loadTours(status);
     }
@@ -1144,12 +1251,18 @@
         document.getElementById('mainImagePreview').innerHTML = '';
         document.getElementById('additionalImagesPreview').innerHTML = '';
 
+        // Clear global variables
+        window.imagesToDelete = [];
+        window.existingImages = [];
+
         new bootstrap.Modal(document.getElementById('tourModal')).show();
     }
 
     async function editTour(id) {
         showLoading();
         try {
+            debugLog('Editing tour:', id);
+
             const response = await api.get('/admin/tours/' + id);
             const tour = response.data;
 
@@ -1178,26 +1291,30 @@
                 document.getElementById('existingImagesContainer').style.display = 'block';
 
                 let previewHtml = '';
-                for (let i = 0; i < tour.tourImages.length; i++) {
-                    const image = tour.tourImages[i];
-                    previewHtml += '<div class="preview-item">' +
+                tour.tourImages.forEach((image, index) => {
+                    previewHtml += '<div class="preview-item" data-image="' + image + '">' +
                         '<img src="' + API_BASE_URL + '/images/' + image + '" alt="tour image">' +
-                        '<div class="remove-image" onclick="markImageForDelete(' + i + ', \'' + image + '\')">' +
+                        '<div class="remove-image" onclick="markImageForDelete(\'' + image + '\', event)">' +
                             '<i class="fas fa-times"></i>' +
                         '</div>' +
                     '</div>';
-                }
+                });
                 document.getElementById('existingImagesPreview').innerHTML = previewHtml;
 
-                // Store existing images for delete tracking
+                // Store existing images
+                window.existingImages = [...tour.tourImages];
                 window.imagesToDelete = [];
             }
 
             new bootstrap.Modal(document.getElementById('tourModal')).show();
 
         } catch (error) {
-            console.error('Error loading tour:', error);
-            Swal.fire('Error', 'Failed to load tour details', 'error');
+            debugLog('Error loading tour:', error);
+            if (error.response?.status === 401) {
+                logout();
+            } else {
+                Swal.fire('Error', 'Failed to load tour details', 'error');
+            }
         } finally {
             hideLoading();
         }
@@ -1221,9 +1338,9 @@
             tourDescription: document.getElementById('tourDescription').value,
             tourHelplineNumber: document.getElementById('tourHelplineNumber').value,
             tourMapEmbedUrl: document.getElementById('tourMapEmbedUrl').value,
-            tourInclusions: document.getElementById('tourInclusions').value.split('\n').filter(function(i) { return i.trim(); }),
-            tourExclusions: document.getElementById('tourExclusions').value.split('\n').filter(function(i) { return i.trim(); }),
-            tourServices: document.getElementById('tourServices').value.split('\n').filter(function(i) { return i.trim(); })
+            tourInclusions: document.getElementById('tourInclusions').value.split('\n').filter(i => i.trim()),
+            tourExclusions: document.getElementById('tourExclusions').value.split('\n').filter(i => i.trim()),
+            tourServices: document.getElementById('tourServices').value.split('\n').filter(i => i.trim())
         };
 
         formData.append('tour', new Blob([JSON.stringify(tourData)], { type: 'application/json' }));
@@ -1241,7 +1358,7 @@
 
         // Add existing images and images to delete for edit mode
         if (tourId) {
-            if (window.existingImages) {
+            if (window.existingImages && window.existingImages.length > 0) {
                 formData.append('existingImages', JSON.stringify(window.existingImages));
             }
             if (window.imagesToDelete && window.imagesToDelete.length > 0) {
@@ -1254,6 +1371,8 @@
         saveBtn.innerHTML = 'Saving... <i class="fas fa-spinner fa-spin ms-2"></i>';
 
         try {
+            debugLog('Saving tour:', tourId ? 'Update' : 'Create');
+
             let response;
             if (tourId) {
                 response = await api.put('/admin/tours/' + tourId, formData, {
@@ -1271,14 +1390,19 @@
                 icon: 'success',
                 title: 'Success',
                 text: 'Tour ' + (tourId ? 'updated' : 'created') + ' successfully!',
-                timer: 2000
+                timer: 2000,
+                showConfirmButton: false
             });
 
-            loadTours();
+            loadTours('all');
 
         } catch (error) {
-            console.error('Error saving tour:', error);
-            Swal.fire('Error', error.response?.data?.message || 'Failed to save tour', 'error');
+            debugLog('Error saving tour:', error);
+            if (error.response?.status === 401) {
+                logout();
+            } else {
+                Swal.fire('Error', error.response?.data?.message || 'Failed to save tour', 'error');
+            }
         } finally {
             saveBtn.disabled = false;
             saveBtn.innerHTML = 'Save Tour';
@@ -1299,20 +1423,27 @@
         if (result.isConfirmed) {
             showLoading();
             try {
+                debugLog('Deleting tour:', id);
+
                 await api.delete('/admin/tours/' + id);
 
                 Swal.fire({
                     icon: 'success',
                     title: 'Deleted!',
                     text: 'Tour has been deleted.',
-                    timer: 2000
+                    timer: 2000,
+                    showConfirmButton: false
                 });
 
-                loadTours();
+                loadTours('all');
 
             } catch (error) {
-                console.error('Error deleting tour:', error);
-                Swal.fire('Error', 'Failed to delete tour', 'error');
+                debugLog('Error deleting tour:', error);
+                if (error.response?.status === 401) {
+                    logout();
+                } else {
+                    Swal.fire('Error', 'Failed to delete tour', 'error');
+                }
             } finally {
                 hideLoading();
             }
@@ -1324,12 +1455,16 @@
     async function loadBookings() {
         showLoading();
         try {
+            debugLog('Loading bookings...');
+
             const response = await api.get('/admin/bookings');
             displayBookings(response.data);
         } catch (error) {
-            console.error('Error loading bookings:', error);
+            debugLog('Error loading bookings:', error);
             if (error.response?.status === 401) {
                 logout();
+            } else {
+                Swal.fire('Error', 'Failed to load bookings', 'error');
             }
         } finally {
             hideLoading();
@@ -1346,8 +1481,7 @@
 
         let html = '';
 
-        for (let i = 0; i < bookings.length; i++) {
-            const booking = bookings[i];
+        bookings.forEach(booking => {
             let statusClass = '';
             if (booking.bookingStatus === 'CONFIRMED') statusClass = 'bg-success';
             else if (booking.bookingStatus === 'PENDING') statusClass = 'bg-warning';
@@ -1369,7 +1503,7 @@
                     '<button class="btn btn-sm btn-danger" onclick="deleteBooking(' + booking.id + ')"><i class="fas fa-trash"></i></button>' +
                 '</div></td>' +
             '</tr>';
-        }
+        });
 
         tbody.innerHTML = html;
     }
@@ -1386,6 +1520,8 @@
 
         showLoading();
         try {
+            debugLog('Updating booking status:', id, status);
+
             await api.put('/admin/bookings/' + id + '/status?status=' + status);
 
             bootstrap.Modal.getInstance(document.getElementById('bookingStatusModal')).hide();
@@ -1394,14 +1530,19 @@
                 icon: 'success',
                 title: 'Success',
                 text: 'Booking status updated successfully!',
-                timer: 2000
+                timer: 2000,
+                showConfirmButton: false
             });
 
             loadBookings();
 
         } catch (error) {
-            console.error('Error updating booking:', error);
-            Swal.fire('Error', 'Failed to update booking status', 'error');
+            debugLog('Error updating booking:', error);
+            if (error.response?.status === 401) {
+                logout();
+            } else {
+                Swal.fire('Error', 'Failed to update booking status', 'error');
+            }
         } finally {
             hideLoading();
         }
@@ -1421,20 +1562,27 @@
         if (result.isConfirmed) {
             showLoading();
             try {
+                debugLog('Deleting booking:', id);
+
                 await api.delete('/admin/bookings/' + id);
 
                 Swal.fire({
                     icon: 'success',
                     title: 'Deleted!',
                     text: 'Booking has been deleted.',
-                    timer: 2000
+                    timer: 2000,
+                    showConfirmButton: false
                 });
 
                 loadBookings();
 
             } catch (error) {
-                console.error('Error deleting booking:', error);
-                Swal.fire('Error', 'Failed to delete booking', 'error');
+                debugLog('Error deleting booking:', error);
+                if (error.response?.status === 401) {
+                    logout();
+                } else {
+                    Swal.fire('Error', 'Failed to delete booking', 'error');
+                }
             } finally {
                 hideLoading();
             }
@@ -1474,12 +1622,26 @@
         }
     }
 
-    function markImageForDelete(index, imageName) {
-        if (!window.imagesToDelete) window.imagesToDelete = [];
+    function markImageForDelete(imageName, event) {
+        if (event) {
+            event.preventDefault();
+        }
+
+        if (!window.imagesToDelete) {
+            window.imagesToDelete = [];
+        }
         window.imagesToDelete.push(imageName);
 
+        // Remove from existingImages array
+        if (window.existingImages) {
+            window.existingImages = window.existingImages.filter(img => img !== imageName);
+        }
+
         // Remove from UI
-        event.target.closest('.preview-item').remove();
+        const previewItem = event.target.closest('.preview-item');
+        if (previewItem) {
+            previewItem.remove();
+        }
     }
 
     // ==================== UTILITY FUNCTIONS ====================
@@ -1513,9 +1675,6 @@
             .replace(/'/g, "&#039;");
     }
 </script>
-
-
-
 
 </body>
 </html>

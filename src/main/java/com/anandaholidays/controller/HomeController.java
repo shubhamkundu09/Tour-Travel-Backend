@@ -21,7 +21,7 @@ public class HomeController {
         return "contact";
     }
 
-    @GetMapping("/destination")
+    @GetMapping("/destinations")
     public String destination() {
         return "destination";
     }
@@ -34,5 +34,18 @@ public class HomeController {
     @GetMapping("/admin")
     public String admin() {
         return "admin";
+    }
+    @GetMapping("/about")
+    public String about() {
+        return "about";
+    }
+    @GetMapping("/gallery")
+    public String gallery() {
+        return "gallery";
+    }
+
+    @GetMapping("/tour-detail")
+    public String tourDetail() {
+        return "tour-detail";
     }
 }
